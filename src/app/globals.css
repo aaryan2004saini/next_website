@@ -177,17 +177,29 @@ body {
 /* PROJECT CARDS & CONTENT STYLES */
 /* Project card styles */
 .project-card {
-  @apply rounded-lg overflow-hidden transition-all duration-300 h-full;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  @apply rounded-xl overflow-hidden bg-black/20 backdrop-blur-sm border border-white/10;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
-.project-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+.project-card > div {
+  flex: 1;
+  min-height: 300px;
 }
 
+@media (min-width: 768px) {
+  .project-card > div {
+    min-height: 400px;
+  }
+}
+
+/* Remove old project-card-image class since we're using absolute positioning */
 .project-card-image {
-  @apply aspect-[3/2] w-full object-cover;
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  object-position: center;
 }
 
 .project-card-content {
@@ -262,4 +274,22 @@ input, textarea, [contenteditable] {
 
 .section-description {
   @apply text-white/70 mb-8 max-w-2xl;
+}
+
+/* Featured Projects layout */
+@media (min-width: 768px) {
+  .featured-projects-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 1.5rem;
+  }
+  
+  .featured-project-large {
+    grid-column: span 8;
+  }
+  
+  .featured-project-small {
+    grid-column: span 4;
+    height: 100%;
+  }
 }

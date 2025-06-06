@@ -30,7 +30,6 @@ const Header: React.FC<HeaderProps> = ({ onMouseEnter, onMouseLeave }) => {
               <div className="bg-gradient-to-r from-emerald-500/20 to-transparent blur-xl absolute inset-0"></div>
               <div
                 className="relative"
-                onMouseEnter={() => onMouseEnter("text")}
                 onMouseLeave={onMouseLeave}
               >
                 <Image
@@ -55,14 +54,14 @@ const Header: React.FC<HeaderProps> = ({ onMouseEnter, onMouseLeave }) => {
                   </svg>
                 </div>
                 <div>
-                  <p 
+                  <p
                     className="opacity-70 text-xs"
                     onMouseEnter={() => onMouseEnter("text")}
                     onMouseLeave={onMouseLeave}
                   >
                     Based in
                   </p>
-                  <p 
+                  <p
                     className="font-medium"
                     onMouseEnter={() => onMouseEnter("text")}
                     onMouseLeave={onMouseLeave}
@@ -82,14 +81,14 @@ const Header: React.FC<HeaderProps> = ({ onMouseEnter, onMouseLeave }) => {
                   </svg>
                 </div>
                 <div>
-                  <p 
+                  <p
                     className="opacity-70 text-xs"
                     onMouseEnter={() => onMouseEnter("text")}
                     onMouseLeave={onMouseLeave}
                   >
                     Local time
                   </p>
-                  <p 
+                  <p
                     className="font-medium"
                     onMouseEnter={() => onMouseEnter("text")}
                     onMouseLeave={onMouseLeave}
@@ -116,14 +115,14 @@ const Header: React.FC<HeaderProps> = ({ onMouseEnter, onMouseLeave }) => {
                 </svg>
               </div>
               <div>
-                <p 
+                <p
                   className="text-xl font-medium"
                   onMouseEnter={() => onMouseEnter("text")}
                   onMouseLeave={onMouseLeave}
                 >
                   250K
                 </p>
-                <p 
+                <p
                   className="text-xs opacity-70"
                   onMouseEnter={() => onMouseEnter("text")}
                   onMouseLeave={onMouseLeave}

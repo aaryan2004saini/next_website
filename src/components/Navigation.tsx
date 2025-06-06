@@ -24,9 +24,8 @@ const Navigation: React.FC<NavigationProps> = ({
           {tabs.map((tab) => (
             <li key={tab}>
               <button
-                className={`px-6 py-3 rounded-full text-white/80 hover:text-white transition-colors ${
-                  activeTab === tab ? 'bg-white/5' : ''
-                }`}
+                className={`px-6 py-3 rounded-full text-white/80 hover:text-white transition-colors ${activeTab === tab ? 'bg-white/5' : ''
+                  }`}
                 onClick={() => {
                   setActiveTab(tab);
                   const element = document.getElementById(tab);

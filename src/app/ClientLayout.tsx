@@ -20,14 +20,14 @@ export default function ClientLayout({
     const handleHideCustomCursor = () => {
       setCursorVisible(false);
     };
-    
+
     const handleShowCustomCursor = () => {
       setCursorVisible(true);
     };
-    
+
     window.addEventListener('hideCustomCursor', handleHideCustomCursor);
     window.addEventListener('showCustomCursor', handleShowCustomCursor);
-    
+
     return () => {
       window.removeEventListener('hideCustomCursor', handleHideCustomCursor);
       window.removeEventListener('showCustomCursor', handleShowCustomCursor);
@@ -38,7 +38,7 @@ export default function ClientLayout({
     <>
       {/* Use the unified cursor component */}
       <Cursor cursorVariant={cursorVariant} cursorVisible={cursorVisible} />
-      
+
       <div className="min-h-screen">
         {children}
       </div>

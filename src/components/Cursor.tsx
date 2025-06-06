@@ -24,10 +24,10 @@ const Cursor: React.FC<CursorProps> = ({
   // Handle smooth cursor movement using requestAnimationFrame
   const updateCursorPosition = (clientX: number, clientY: number) => {
     if (!cursorRef.current) return;
-    
+
     const x = clientX;
     const y = clientY;
-    
+
     setPosition({ x, y });
   };
 
@@ -42,7 +42,7 @@ const Cursor: React.FC<CursorProps> = ({
     // Ensure the default cursor is disabled
     document.documentElement.style.cursor = 'none';
     document.body.style.cursor = 'none';
-    
+
     // Override any potential inline style that might show a cursor
     const styleTag = document.createElement('style');
     styleTag.textContent = `
@@ -51,13 +51,13 @@ const Cursor: React.FC<CursorProps> = ({
       input, textarea { cursor: none !important; caret-color: white; }
     `;
     document.head.appendChild(styleTag);
-    
+
     // Update cursor position on mouse move using RAF for better performance
     const handleMouseMove = (e: MouseEvent) => {
       if (requestRef.current) {
         cancelAnimationFrame(requestRef.current);
       }
-      
+
       requestRef.current = requestAnimationFrame(() => {
         updateCursorPosition(e.clientX, e.clientY);
         if (!isInitialized) {
@@ -65,7 +65,7 @@ const Cursor: React.FC<CursorProps> = ({
         }
       });
     };
-    
+
     // Also update cursor position on scroll to ensure it stays with the viewport
     const handleScroll = () => {
       // Only update if we have a last known mouse position
@@ -81,7 +81,7 @@ const Cursor: React.FC<CursorProps> = ({
       const textElements = document.querySelectorAll(
         'p, h1, h2, h3, h4, h5, h6, span, label, input, textarea, [contenteditable]'
       );
-      
+
       // Find all button elements that should show the button cursor
       const buttonElements = document.querySelectorAll(
         'button, .button, .glass-button, a, [role="button"]'
@@ -91,51 +91,51 @@ const Cursor: React.FC<CursorProps> = ({
       const navElements = document.querySelectorAll(
         '.nav-button, .navbar-container button, .navbar-buttons-container'
       );
-      
+
       // Helper function to set the cursor to text mode
       const setTextMode = () => {
         document.body.setAttribute('data-cursor', 'text');
         setIsNavItem(false);
       };
-      
+
       // Helper function to set the cursor to button mode
       const setButtonMode = () => {
         document.body.setAttribute('data-cursor', 'button');
         setIsNavItem(false);
       };
-      
+
       // Helper function to set the cursor to navbar mode (which hides it)
       const setNavMode = () => {
         document.body.setAttribute('data-cursor', 'navbar');
         setIsNavItem(true);
       };
-      
+
       // Helper function to reset cursor mode
       const resetCursorMode = () => {
         document.body.setAttribute('data-cursor', 'default');
         setIsNavItem(false);
       };
-      
+
       // Add listeners to each text element
       textElements.forEach(element => {
         // Force the element to have cursor: none
         (element as HTMLElement).style.cursor = 'none';
-        
+
         element.addEventListener('mouseenter', setTextMode);
         element.addEventListener('mouseleave', resetCursorMode);
-        
+
         // For input elements, also handle focus/blur
         if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
           element.addEventListener('focus', setTextMode);
           element.addEventListener('blur', resetCursorMode);
         }
       });
-      
+
       // Add listeners to each button element
       buttonElements.forEach(element => {
         // Force the element to have cursor: none
         (element as HTMLElement).style.cursor = 'none';
-        
+
         // Don't add button cursor to navbar elements
         if (!element.closest('.navbar-container, .nav-button, .navbar-buttons-container')) {
           element.addEventListener('mouseenter', setButtonMode);
@@ -146,23 +146,23 @@ const Cursor: React.FC<CursorProps> = ({
       // Add specific listeners to navbar elements
       navElements.forEach(element => {
         (element as HTMLElement).style.cursor = 'none';
-        
+
         element.addEventListener('mouseenter', setNavMode);
         element.addEventListener('mouseleave', resetCursorMode);
       });
-      
+
       // Clean up function to remove all listeners
       return () => {
         textElements.forEach(element => {
           element.removeEventListener('mouseenter', setTextMode);
           element.removeEventListener('mouseleave', resetCursorMode);
-          
+
           if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
             element.removeEventListener('focus', setTextMode);
             element.removeEventListener('blur', resetCursorMode);
           }
         });
-        
+
         buttonElements.forEach(element => {
           if (!element.closest('.navbar-container, .nav-button, .navbar-buttons-container')) {
             element.removeEventListener('mouseenter', setButtonMode);
@@ -180,22 +180,22 @@ const Cursor: React.FC<CursorProps> = ({
     // Listen for mousemove and scroll events
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
     window.addEventListener('scroll', handleScroll, { passive: true });
-    
+
     // Set up a mutation observer to handle dynamically added elements
     const observer = new MutationObserver(() => {
       const cleanup = addElementListeners();
       return cleanup;
     });
-    
+
     // Start observing the document for changes
-    observer.observe(document.body, { 
+    observer.observe(document.body, {
       childList: true,
-      subtree: true 
+      subtree: true
     });
-    
+
     // Initial setup of element listeners
     const cleanup = addElementListeners();
-    
+
     // Clean up all event listeners on unmount
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
@@ -203,7 +203,7 @@ const Cursor: React.FC<CursorProps> = ({
       observer.disconnect();
       cleanup();
       document.head.removeChild(styleTag);
-      
+
       if (requestRef.current) {
         cancelAnimationFrame(requestRef.current);
       }
@@ -223,18 +223,18 @@ const Cursor: React.FC<CursorProps> = ({
   if (!cursorVisible || hoveredIcon !== null || !isInitialized) {
     return null;
   }
-  
+
   const currentMode = getCursorMode();
-  
+
   // If in navbar mode, return null to hide the cursor
   if (currentMode === 'navbar' || isNavItem) {
     return null;
   }
-  
+
   return (
-    <div 
+    <div
       ref={cursorRef}
-      className="cursor-container z-[100]" 
+      className="cursor-container z-[100]"
       style={{
         left: `${position.x}px`,
         top: `${position.y}px`,
@@ -242,14 +242,13 @@ const Cursor: React.FC<CursorProps> = ({
         position: 'fixed'
       }}
     >
-      <div 
-        className={`transition-all duration-150 ease-out ${
-          currentMode === 'text' 
-            ? 'text-cursor-style opacity-100' 
+      <div
+        className={`transition-all duration-150 ease-out ${currentMode === 'text'
+            ? 'text-cursor-style opacity-100'
             : currentMode === 'button'
               ? 'button-cursor-style opacity-100'
               : 'default-cursor-style opacity-100'
-        }`}
+          }`}
       />
     </div>
   );
