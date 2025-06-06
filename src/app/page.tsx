@@ -72,7 +72,8 @@ export default function Home() {
     if (index === null) return;
     
     // Toggle active state of the clicked icon
-    setClickedIcon(index === clickedIcon ? null : index);
+    const newClickedIcon = index === clickedIcon ? null : index;
+    setClickedIcon(newClickedIcon);
 
     // Route to appropriate section or trigger functionality
     if (index === 0) {
@@ -102,18 +103,6 @@ export default function Home() {
       setActiveTab('contact');
     } else if (index === 4) {
       // Theme toggle - you can implement theme switching here
-    }
-    
-    // Update container width for accessibility
-    const container = document.querySelector('.navbar-container');
-    if (container) {
-      if (index === clickedIcon) {
-        // If toggling off, remove the expanded class
-        container.classList.remove('navbar-expanded');
-      } else {
-        // If activating, add the expanded class
-        container.classList.add('navbar-expanded');
-      }
     }
   };
 
@@ -407,7 +396,7 @@ export default function Home() {
 
       {/* Floating bottom navigation */}
       <div className="bottom-navigation">
-        <div className="navbar-container">
+        <div className={`navbar-container ${clickedIcon !== null ? 'navbar-expanded' : ''}`}>
           <div className="navbar-buttons-container">
             {icons.map((item, index) => (
               <button

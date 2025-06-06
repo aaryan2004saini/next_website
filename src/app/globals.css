@@ -96,51 +96,85 @@ body {
 }
 
 .nav-button {
-  @apply relative flex items-center justify-center w-10 h-10 rounded-lg 
+  @apply relative flex items-center justify-center rounded-lg 
          transition-all duration-300;
-  /* Min-width to ensure buttons don't collapse when label is shown */
   min-width: 2.5rem;
+  height: 2.5rem;
+  padding: 0 0.75rem;
   position: relative;
+  overflow: visible;
 }
 
-.nav-button:hover, .nav-button.active {
+.nav-button:hover {
   @apply bg-white/90 text-black transform scale-105 
          shadow-[0_0_15px_rgba(255,255,255,0.6)];
 }
 
-.nav-button-label {
-  @apply absolute whitespace-nowrap text-xs font-medium text-white opacity-0 transition-all duration-300;
-  left: 100%; 
-  margin-left: 1rem;
-  white-space: nowrap;
-  pointer-events: none; /* Ensure the label doesn't interfere with clicks */
+.nav-button.active {
+  @apply bg-white/90 text-black transform scale-105 
+         shadow-[0_0_15px_rgba(255,255,255,0.6)];
+  width: auto;
+  padding-right: 2rem; /* Space for the label */
 }
 
-.nav-button.active .nav-button-label {
+.nav-button-label {
+  @apply whitespace-nowrap text-xs font-medium opacity-0 transition-all duration-300;
+  position: static;
+  margin-left: 0.5rem;
+  display: inline-block;
+  pointer-events: none; /* Ensure the label doesn't interfere with clicks */
+  color: rgba(0, 0, 0, 0.9);
+  font-weight: 600;
+  max-width: 0;
+  overflow: hidden;
+}
+
+.nav-button.active .nav-button-label,
+.active-label {
   @apply opacity-100;
+  max-width: 100px;
 }
 
 /* Rounded navbar container */
 .navbar-container {
   @apply backdrop-blur-md bg-black/40 rounded-xl border border-white/10;
-  padding: 1rem;
+  padding: 0.75rem;
   transition: all 0.3s ease;
   width: auto;
   position: relative; /* Add positioning context */
+  overflow: visible; /* Ensure labels can overflow outside the container */
 }
 
 /* Container for nav buttons to create proper spacing */
 .navbar-buttons-container {
   display: flex;
   align-items: center;
-  gap: 2rem; /* Increase spacing between buttons */
+  gap: 1rem; /* Space between buttons */
   position: relative;
+  transition: all 0.3s ease;
+}
+
+/* Apply correct spacing to each button */
+.nav-button.active,
+.nav-button.active-with-space {
+  /* No additional margin needed now */
+}
+
+/* Fix for Safari and other browsers without :has support */
+.navbar-buttons-container .nav-button {
+  position: relative;
+  z-index: 2;
+}
+
+.navbar-buttons-container .nav-button.active ~ .nav-button,
+.navbar-buttons-container .nav-button.active-with-space ~ .nav-button {
+  /* No additional margin needed now */
 }
 
 /* Expanded navigation container when a button is active */
 .navbar-container:has(.nav-button.active),
 .navbar-expanded {
-  padding-right: 8rem; /* Extra space for the label */
+  /* No fixed padding needed anymore */
 }
 
 /* Text cursor container - to ensure it's just a vertical line */
