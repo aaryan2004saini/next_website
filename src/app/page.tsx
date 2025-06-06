@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHouse, faFolder, faUser, faEnvelope, faVrCardboard, faMoon, faSun } from '@fortawesome/free-solid-svg-icons';
+import { faHouse, faFolder, faUser, faEnvelope, faVrCardboard, faCalendarCheck } from '@fortawesome/free-solid-svg-icons';
 import Image from 'next/image';
 import Header from '@/components/Header';
 import VRModal from '@/components/VRModal';
@@ -24,15 +24,15 @@ export default function Home() {
   const [hoveredIcon, setHoveredIcon] = useState<number | null>(null);
   const [clickedIcon, setClickedIcon] = useState<number | null>(null);
   const [cursorVisible, setCursorVisible] = useState(true);
-  const [darkTheme, setDarkTheme] = useState(true);
 
   // Define icons first, before any functions that use it
   const icons = [
     { icon: faHouse, label: "Home" },
     { icon: faFolder, label: "Portfolio" },
+    { icon: faVrCardboard, label: "Services" },
     { icon: faUser, label: "About" },
     { icon: faEnvelope, label: "Contact" },
-    { icon: faVrCardboard, label: "Services" },
+    { icon: faCalendarCheck, label: "Booking" },
   ];
 
   useEffect(() => {
@@ -71,10 +71,11 @@ export default function Home() {
   };
 
   const handleIconClick = (index: number | null) => {
-    setClickedIcon(index);
+    // Toggle the clicked icon - if the same icon is clicked again, deselect it
+    setClickedIcon(prevClickedIcon => prevClickedIcon === index ? null : index);
 
     // Scroll to the corresponding section
-    const sections = ["home", "portfolio", "about", "contact", "services"];
+    const sections = ["home", "portfolio", "services", "about", "contact", "booking"];
     if (index !== null && index < sections.length) {
       const section = document.getElementById(sections[index]);
       if (section) {
@@ -925,6 +926,52 @@ export default function Home() {
         </motion.section>
       ),
     },
+    {
+      id: 'booking',
+      content: (
+        <motion.section
+          initial="hidden"
+          animate="visible"
+          variants={fadeInUp}
+          className="section container-wide"
+        >
+          <div className="glass-morphism p-8 mb-10">
+            <h2 className="section-title" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
+              Book a Consultation
+            </h2>
+            <p className="section-description" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
+              Schedule a free consultation to discuss your architectural visualization needs
+            </p>
+          </div>
+
+          <div className="glass-morphism p-8">
+            <div className="flex flex-col items-center text-center">
+              <h3 className="text-2xl font-medium mb-6" onMouseEnter={() => handleMouseEnter("")} onMouseLeave={handleMouseLeave}>
+                Coming Soon
+              </h3>
+              <p className="mb-6 text-white/70" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
+                Our online booking system is under development. Please contact us directly to schedule a consultation.
+              </p>
+              <motion.button
+                className="glass-button px-8 py-3 bg-emerald-500/20 hover:bg-emerald-500/30"
+                whileHover={{ scale: 1.05 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 10 }}
+                onClick={() => {
+                  const contactSection = document.getElementById('contact');
+                  if (contactSection) {
+                    contactSection.scrollIntoView({ behavior: 'smooth' });
+                  }
+                }}
+                onMouseEnter={() => handleMouseEnter("button")}
+                onMouseLeave={handleMouseLeave}
+              >
+                Contact Us Instead
+              </motion.button>
+            </div>
+          </div>
+        </motion.section>
+      ),
+    },
   ];
 
   return (
@@ -1003,16 +1050,6 @@ export default function Home() {
                 </span>
               </button>
             ))}
-            
-            {/* Theme Toggle Button */}
-            <button
-              className="nav-button ml-2 border-l border-white/10 pl-2"
-              onMouseEnter={() => handleIconHover(null)}
-              onMouseLeave={() => handleIconHover(null)}
-              onClick={() => setDarkTheme(!darkTheme)}
-            >
-              <FontAwesomeIcon icon={darkTheme ? faSun : faMoon} className="text-lg" />
-            </button>
           </div>
         </div>
       </div>
