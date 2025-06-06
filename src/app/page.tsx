@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faVrCardboard } from '@fortawesome/free-solid-svg-icons';
+import { faVrCardboard, faHouse, faFolder, faUser, faEnvelope, faSun } from '@fortawesome/free-solid-svg-icons';
 import Header from '@/components/Header';
-import Navigation from '@/components/Navigation';
 import VRModal from '@/components/VRModal';
+import Cursor from '@/components/Cursor';
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 20 },
@@ -19,6 +19,37 @@ export default function Home() {
   const [showVRModal, setShowVRModal] = useState(false);
   const [panoramaPosition, setPanoramaPosition] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
+  const [hoveredIcon, setHoveredIcon] = useState<number | null>(null);
+  const [clickedIcon, setClickedIcon] = useState<number | null>(null);
+  const [cursorVisible, setCursorVisible] = useState(true);
+
+  // Define icons first, before any functions that use it
+  const icons = [
+    { icon: faHouse, label: "Home" },
+    { icon: faFolder, label: "Portfolio" },
+    { icon: faUser, label: "About" },
+    { icon: faEnvelope, label: "Contact" },
+    { icon: faSun, label: "Theme" },
+  ];
+
+  useEffect(() => {
+    // Listen for custom events from the bottom navbar
+    const handleHideCustomCursor = () => {
+      setCursorVisible(false);
+    };
+    
+    const handleShowCustomCursor = () => {
+      setCursorVisible(true);
+    };
+    
+    window.addEventListener('hideCustomCursor', handleHideCustomCursor);
+    window.addEventListener('showCustomCursor', handleShowCustomCursor);
+    
+    return () => {
+      window.removeEventListener('hideCustomCursor', handleHideCustomCursor);
+      window.removeEventListener('showCustomCursor', handleShowCustomCursor);
+    };
+  }, []);
 
   const handleMouseEnter = useCallback((element: string) => {
     setHoveredElement(element);
@@ -32,6 +63,69 @@ export default function Home() {
     setShowVRModal(true);
   }, []);
 
+  const handleIconHover = (index: number | null) => {
+    setHoveredIcon(index);
+  };
+  
+  const handleIconClick = (index: number | null) => {
+    // Handle icon click based on icon type
+    if (index === null) return;
+    
+    // Toggle active state of the clicked icon
+    setClickedIcon(index === clickedIcon ? null : index);
+
+    // Route to appropriate section or trigger functionality
+    if (index === 0) {
+      // Home icon
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      setActiveTab('home');
+    } else if (index === 1) {
+      // Portfolio icon
+      const portfolioSection = document.getElementById('portfolio');
+      if (portfolioSection) {
+        portfolioSection.scrollIntoView({ behavior: 'smooth' });
+      }
+      setActiveTab('portfolio');
+    } else if (index === 2) {
+      // About icon
+      const aboutSection = document.getElementById('about');
+      if (aboutSection) {
+        aboutSection.scrollIntoView({ behavior: 'smooth' });
+      }
+      setActiveTab('about');
+    } else if (index === 3) {
+      // Contact icon
+      const contactSection = document.getElementById('contact');
+      if (contactSection) {
+        contactSection.scrollIntoView({ behavior: 'smooth' });
+      }
+      setActiveTab('contact');
+    } else if (index === 4) {
+      // Theme toggle - you can implement theme switching here
+    }
+    
+    // Update container width for accessibility
+    const container = document.querySelector('.navbar-container');
+    if (container) {
+      if (index === clickedIcon) {
+        // If toggling off, remove the expanded class
+        container.classList.remove('navbar-expanded');
+      } else {
+        // If activating, add the expanded class
+        container.classList.add('navbar-expanded');
+      }
+    }
+  };
+
+  // Helper function to uniformly apply text interactions
+  const withTextInteraction = (Component: React.ElementType, props: any = {}) => (
+    <Component
+      {...props}
+      onMouseEnter={() => handleMouseEnter("text")}
+      onMouseLeave={handleMouseLeave}
+    />
+  );
+
   const sections = [
     {
       id: 'home',
@@ -43,21 +137,31 @@ export default function Home() {
           className="min-h-screen flex items-center section-padding"
         >
           <div className="glass-morphism p-8 w-full max-w-4xl mx-auto">
-            <h1 className="text-5xl md:text-7xl font-light mb-6">
-              Next-Gen Real Estate Visualization
-            </h1>
-            <p className="text-xl text-white/70 mb-8">
+            <div 
+              className="text-5xl md:text-7xl font-light mb-6"
+              onMouseEnter={() => handleMouseEnter("text")}
+              onMouseLeave={handleMouseLeave}
+            >
+              <h1>
+                Next-Gen Real Estate Visualization
+              </h1>
+            </div>
+            <p 
+              className="text-xl text-white/70 mb-8"
+              onMouseEnter={() => handleMouseEnter("text")}
+              onMouseLeave={handleMouseLeave}
+            >
               Experience properties like never before with our Unreal Engine 5 powered
               visualizations and immersive VR experiences.
             </p>
             <button 
               className="glass-button px-8 py-4"
+              onClick={() => setShowVRModal(true)}
               onMouseEnter={() => handleMouseEnter("button")}
               onMouseLeave={handleMouseLeave}
-              onClick={handleVRButtonClick}
             >
               <FontAwesomeIcon icon={faVrCardboard} className="mr-2" />
-              Enter VR Experience
+              Experience VR Demo
             </button>
           </div>
         </motion.section>
@@ -73,8 +177,20 @@ export default function Home() {
           className="min-h-screen section-padding"
         >
           <div className="glass-morphism p-8 mb-12">
-            <h2 className="text-4xl font-light mb-4">Featured Projects</h2>
-            <p className="text-white/70">Explore our latest architectural visualizations</p>
+            <h2 
+              className="text-4xl font-light mb-4"
+              onMouseEnter={() => handleMouseEnter("text")}
+              onMouseLeave={handleMouseLeave}
+            >
+              Featured Projects
+            </h2>
+            <p 
+              className="text-white/70"
+              onMouseEnter={() => handleMouseEnter("text")}
+              onMouseLeave={handleMouseLeave}
+            >
+              Explore our latest architectural visualizations
+            </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[1, 2, 3, 4, 5, 6].map((item) => (
@@ -93,8 +209,20 @@ export default function Home() {
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
-                    <h3 className="text-xl font-medium">Project Title</h3>
-                    <p className="text-white/70">Location</p>
+                    <h3 
+                      className="text-xl font-medium"
+                      onMouseEnter={() => handleMouseEnter("text")}
+                      onMouseLeave={handleMouseLeave}
+                    >
+                      Project Title
+                    </h3>
+                    <p 
+                      className="text-white/70"
+                      onMouseEnter={() => handleMouseEnter("text")}
+                      onMouseLeave={handleMouseLeave}
+                    >
+                      Location
+                    </p>
                   </div>
                 </div>
               </motion.div>
@@ -113,8 +241,18 @@ export default function Home() {
           className="min-h-screen flex items-center section-padding"
         >
           <div className="glass-morphism p-8 w-full max-w-4xl mx-auto">
-            <h2 className="text-4xl font-light mb-6">About Us</h2>
-            <p className="text-white/70 mb-8">
+            <h2 
+              className="text-4xl font-light mb-6"
+              onMouseEnter={() => handleMouseEnter("text")}
+              onMouseLeave={handleMouseLeave}
+            >
+              About Us
+            </h2>
+            <p 
+              className="text-white/70 mb-8"
+              onMouseEnter={() => handleMouseEnter("text")}
+              onMouseLeave={handleMouseLeave}
+            >
               We are a team of passionate 3D artists and developers pushing the boundaries
               of architectural visualization using Unreal Engine 5. Our mission is to
               transform how people experience unbuilt spaces through photorealistic
@@ -126,8 +264,18 @@ export default function Home() {
                 onMouseEnter={() => handleMouseEnter("button")}
                 onMouseLeave={handleMouseLeave}
               >
-                <h3 className="text-xl mb-4">Our Approach</h3>
-                <p className="text-white/70">
+                <h3 
+                  className="text-xl mb-4"
+                  onMouseEnter={() => handleMouseEnter("text")}
+                  onMouseLeave={handleMouseLeave}
+                >
+                  Our Approach
+                </h3>
+                <p 
+                  className="text-white/70"
+                  onMouseEnter={() => handleMouseEnter("text")}
+                  onMouseLeave={handleMouseLeave}
+                >
                   Using cutting-edge technology and artistic expertise to create
                   stunning visualizations that help clients make informed decisions.
                 </p>
@@ -137,8 +285,18 @@ export default function Home() {
                 onMouseEnter={() => handleMouseEnter("button")}
                 onMouseLeave={handleMouseLeave}
               >
-                <h3 className="text-xl mb-4">Technology</h3>
-                <p className="text-white/70">
+                <h3 
+                  className="text-xl mb-4"
+                  onMouseEnter={() => handleMouseEnter("text")}
+                  onMouseLeave={handleMouseLeave}
+                >
+                  Technology
+                </h3>
+                <p 
+                  className="text-white/70"
+                  onMouseEnter={() => handleMouseEnter("text")}
+                  onMouseLeave={handleMouseLeave}
+                >
                   Powered by Unreal Engine 5, featuring Lumen, Nanite, and
                   ray-traced reflections for unprecedented realism.
                 </p>
@@ -158,15 +316,23 @@ export default function Home() {
           className="min-h-screen flex items-center section-padding"
         >
           <div className="glass-morphism p-8 w-full max-w-4xl mx-auto">
-            <h2 className="text-4xl font-light mb-6">Get in Touch</h2>
+            <div 
+              className="text-4xl font-light mb-6"
+              onMouseEnter={() => handleMouseEnter("text")}
+              onMouseLeave={handleMouseLeave}
+            >
+              <h2>
+                Get in Touch
+              </h2>
+            </div>
             <form className="space-y-6">
               <div>
                 <input
                   type="text"
                   placeholder="Name"
                   className="w-full glass-button px-6 py-4 bg-transparent"
-                  onMouseEnter={() => handleMouseEnter("text")}
-                  onMouseLeave={handleMouseLeave}
+                  onFocus={() => handleMouseEnter("text")}
+                  onBlur={handleMouseLeave}
                 />
               </div>
               <div>
@@ -174,8 +340,8 @@ export default function Home() {
                   type="email"
                   placeholder="Email"
                   className="w-full glass-button px-6 py-4 bg-transparent"
-                  onMouseEnter={() => handleMouseEnter("text")}
-                  onMouseLeave={handleMouseLeave}
+                  onFocus={() => handleMouseEnter("text")}
+                  onBlur={handleMouseLeave}
                 />
               </div>
               <div>
@@ -183,8 +349,8 @@ export default function Home() {
                   placeholder="Message"
                   rows={4}
                   className="w-full glass-button px-6 py-4 bg-transparent resize-none"
-                  onMouseEnter={() => handleMouseEnter("text")}
-                  onMouseLeave={handleMouseLeave}
+                  onFocus={() => handleMouseEnter("text")}
+                  onBlur={handleMouseLeave}
                 />
               </div>
               <button 
@@ -212,15 +378,16 @@ export default function Home() {
         <div className="absolute -bottom-[30%] -left-[20%] w-[80%] h-[80%] rounded-full bg-emerald-900/10 blur-3xl" />
       </div>
 
+      {/* Custom cursor as a separate component */}
+      <Cursor 
+        hoveredElement={hoveredElement} 
+        hoveredIcon={hoveredIcon} 
+        cursorVisible={cursorVisible}
+      />
+
       {/* Main Content */}
       <div className="relative z-10 w-full max-w-7xl mx-auto px-4 py-6">
         <Header onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} />
-        <Navigation
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
-        />
         {sections.map((section) => (
           <div key={section.id} id={section.id}>
             {section.content}
@@ -237,6 +404,28 @@ export default function Home() {
         zoom={zoom}
         setZoom={setZoom}
       />
+
+      {/* Floating bottom navigation */}
+      <div className="bottom-navigation">
+        <div className="navbar-container">
+          <div className="navbar-buttons-container">
+            {icons.map((item, index) => (
+              <button
+                key={index}
+                className={`nav-button ${clickedIcon === index ? 'active' : ''}`}
+                onMouseEnter={() => handleIconHover(index)}
+                onMouseLeave={() => handleIconHover(null)}
+                onClick={() => handleIconClick(index)}
+              >
+                <FontAwesomeIcon icon={item.icon} className="text-lg" />
+                <span className="nav-button-label">
+                  {item.label}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

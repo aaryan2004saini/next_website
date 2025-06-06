@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import ShineEffect from './ShineEffect';
+import Image from 'next/image';
 
 interface HeaderProps {
   onMouseEnter: (element: string) => void;
@@ -29,13 +30,19 @@ const Header: React.FC<HeaderProps> = ({ onMouseEnter, onMouseLeave }) => {
           <div className="flex items-center gap-8">
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 to-transparent blur-xl"></div>
-              <h1
-                className="relative text-4xl md:text-5xl text-white font-light tracking-wider"
+              <div
+                className="relative"
                 onMouseEnter={() => onMouseEnter("text")}
                 onMouseLeave={onMouseLeave}
               >
-                Nexus3D
-              </h1>
+                <Image
+                  src="/assets/flik-logo.png"
+                  alt="Flik Logo"
+                  width={150}
+                  height={60}
+                  className="object-contain"
+                />
+              </div>
             </div>
             <div className="flex items-center gap-6">
               <div
@@ -43,16 +50,38 @@ const Header: React.FC<HeaderProps> = ({ onMouseEnter, onMouseLeave }) => {
                 onMouseEnter={() => onMouseEnter("text")}
                 onMouseLeave={onMouseLeave}
               >
-                <p className="opacity-70">Based in</p>
-                <p className="font-medium">New Zealand</p>
+                <p 
+                  className="opacity-70"
+                  onMouseEnter={() => onMouseEnter("text")}
+                  onMouseLeave={onMouseLeave}
+                >
+                  Based in
+                </p>
+                <p 
+                  className="font-medium"
+                  onMouseEnter={() => onMouseEnter("text")}
+                  onMouseLeave={onMouseLeave}
+                >
+                  India
+                </p>
               </div>
               <div
                 className="text-white/90 text-sm backdrop-blur-xl bg-white/5 rounded-2xl px-6 py-3 border border-white/10"
                 onMouseEnter={() => onMouseEnter("text")}
                 onMouseLeave={onMouseLeave}
               >
-                <p className="opacity-70">Local time</p>
-                <p className="font-medium">
+                <p 
+                  className="opacity-70"
+                  onMouseEnter={() => onMouseEnter("text")}
+                  onMouseLeave={onMouseLeave}
+                >
+                  Local time
+                </p>
+                <p 
+                  className="font-medium"
+                  onMouseEnter={() => onMouseEnter("text")}
+                  onMouseLeave={onMouseLeave}
+                >
                   {currentTime.toLocaleTimeString("en-US", {
                     hour: "2-digit",
                     minute: "2-digit",
@@ -68,8 +97,20 @@ const Header: React.FC<HeaderProps> = ({ onMouseEnter, onMouseLeave }) => {
               onMouseEnter={() => onMouseEnter("text")}
               onMouseLeave={onMouseLeave}
             >
-              <p className="text-2xl font-medium">250K</p>
-              <p className="text-sm opacity-70">@nexus3dvisuals</p>
+              <p 
+                className="text-2xl font-medium"
+                onMouseEnter={() => onMouseEnter("text")}
+                onMouseLeave={onMouseLeave}
+              >
+                250K
+              </p>
+              <p 
+                className="text-sm opacity-70"
+                onMouseEnter={() => onMouseEnter("text")}
+                onMouseLeave={onMouseLeave}
+              >
+                @flikofficial
+              </p>
             </div>
 
             <div className="relative group">
