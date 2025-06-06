@@ -5,8 +5,8 @@ import ClientLayout from './ClientLayout';
 const spaceGrotesk = Space_Grotesk({ subsets: ['latin'] });
 
 export const metadata = {
-  title: 'Nexus3D - Unreal Engine Visualization Studio',
-  description: 'Professional 3D visualization studio specializing in architectural and interior design using Unreal Engine 5.',
+  title: 'Flik - Architectural Visualization Studio',
+  description: 'Professional architectural visualization studio specializing in architectural and interior design using Unreal Engine 5.',
 };
 
 export default function RootLayout({

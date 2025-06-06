@@ -34,7 +34,7 @@ const Header: React.FC<HeaderProps> = ({ onMouseEnter, onMouseLeave }) => {
               >
                 <Image
                   src="/assets/flik-logo.png"
-                  alt="Nexus3D Logo"
+                  alt="Flik Logo"
                   width={120}
                   height={48}
                   className="object-contain"
@@ -127,7 +127,7 @@ const Header: React.FC<HeaderProps> = ({ onMouseEnter, onMouseLeave }) => {
                   onMouseEnter={() => onMouseEnter("text")}
                   onMouseLeave={onMouseLeave}
                 >
-                  @nexus3d
+                  @_flik.in_
                 </p>
               </div>
             </div>

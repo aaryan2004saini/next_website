@@ -100,7 +100,7 @@ const App: React.FC = () => {
                                         onMouseEnter={() => handleMouseEnter("text")}
                                         onMouseLeave={handleMouseLeave}
                                     >
-                                        Nexus3D
+                                        Flik
                                     </h1>
                                 </div>
                                 <div className="flex items-center gap-6">
@@ -135,7 +135,7 @@ const App: React.FC = () => {
                                     onMouseLeave={handleMouseLeave}
                                 >
                                     <p className="text-2xl font-medium">250K</p>
-                                    <p className="text-sm opacity-70">@nexus3dvisuals</p>
+                                    <p className="text-sm opacity-70">@flikvisuals</p>
                                 </div>
 
                                 <div className="relative group">
