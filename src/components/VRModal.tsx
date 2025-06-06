@@ -1,8 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faVrCardboard, faTimes, faPlus, faMinus } from '@fortawesome/free-solid-svg-icons';
+import { faVrCardboard, faTimes, faPlus, faMinus, faHandPointer } from '@fortawesome/free-solid-svg-icons';
+import { images } from '@/utils/assets';
 
 interface VRModalProps {
   showVRModal: boolean;
@@ -25,15 +27,15 @@ const VRModal: React.FC<VRModalProps> = ({
 
   const handlePanoramaMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.buttons === 1) {
-      setPanoramaPosition((prev) => ({
-        x: prev.x + e.movementX,
-        y: prev.y + e.movementY,
-      }));
+      setPanoramaPosition({
+        x: panoramaPosition.x + e.movementX,
+        y: panoramaPosition.y + e.movementY,
+      });
     }
   };
 
   const handleZoom = (delta: number) => {
-    setZoom((prev) => Math.min(Math.max(0.5, prev + delta * 0.1), 2));
+    setZoom(Math.min(Math.max(0.5, zoom + delta * 0.1), 2));
   };
 
   if (!showVRModal) return null;
@@ -45,14 +47,24 @@ const VRModal: React.FC<VRModalProps> = ({
         onMouseMove={handlePanoramaMove}
         onWheel={(e) => handleZoom(Math.sign(-e.deltaY))}
       >
-        <img
-          src="https://source.unsplash.com/random/1920x1080?architecture,interior"
-          alt="360 Panorama"
-          className="w-full h-full object-cover transition-transform duration-300"
-          style={{
-            transform: `translate(${panoramaPosition.x}px, ${panoramaPosition.y}px) scale(${zoom})`,
-          }}
-        />
+        <div className="relative w-full h-full">
+          <div 
+            className="w-full h-full absolute" 
+            style={{
+              transform: `translate(${panoramaPosition.x}px, ${panoramaPosition.y}px) scale(${zoom})`,
+              transition: "transform 300ms ease"
+            }}
+          >
+            <Image
+              src={images.panoramicView}
+              alt="360 Panorama"
+              className="object-cover"
+              fill
+              sizes="100vw"
+              priority
+            />
+          </div>
+        </div>
         {/* Controls */}
         <div className="absolute top-4 right-4 flex items-center gap-4">
           <button
@@ -95,7 +107,7 @@ const VRModal: React.FC<VRModalProps> = ({
         </div>
         {/* Touch Instructions */}
         <div className="absolute bottom-4 left-4 text-white/70 text-sm backdrop-blur-md bg-black/30 rounded-full px-4 py-2">
-          <i className="fas fa-hand-pointer mr-2"></i>
+          <FontAwesomeIcon icon={faHandPointer} className="mr-2" />
           Drag to explore | Scroll to zoom
         </div>
       </div>

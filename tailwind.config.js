@@ -8,7 +8,9 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Space Grotesk', 'sans-serif'],
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        heading: ['Inter', 'system-ui', 'sans-serif'],
+        mono: ['Geist Mono', 'Geist Mono Fallback', 'monospace'],
       },
       colors: {
         emerald: {
@@ -20,6 +22,8 @@ module.exports = {
         'gradient-x': 'gradient-x 15s ease infinite',
         'gradient-y': 'gradient-y 15s ease infinite',
         'gradient-xy': 'gradient-xy 15s ease infinite',
+        'pulse': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'float': 'float 6s ease-in-out infinite',
       },
       keyframes: {
         'gradient-y': {
@@ -33,13 +37,14 @@ module.exports = {
           },
         },
         'gradient-x': {
-          '0%, 100%': {
-            'background-size': '200% 200%',
-            'background-position': 'left center',
+          '0%': {
+            'transform': 'translateX(-100%)',
           },
           '50%': {
-            'background-size': '200% 200%',
-            'background-position': 'right center',
+            'transform': 'translateX(0)',
+          },
+          '100%': {
+            'transform': 'translateX(100%)',
           },
         },
         'gradient-xy': {
@@ -50,6 +55,24 @@ module.exports = {
           '50%': {
             'background-size': '200% 200%',
             'background-position': 'right center',
+          },
+        },
+        'pulse': {
+          '0%, 100%': {
+            opacity: 0.8,
+            transform: 'scale(1)',
+          },
+          '50%': { 
+            opacity: 0.4,
+            transform: 'scale(0.95)',
+          },
+        },
+        'float': {
+          '0%, 100%': { 
+            transform: 'translateY(0)',
+          },
+          '50%': {
+            transform: 'translateY(-10px)',
           },
         },
       },

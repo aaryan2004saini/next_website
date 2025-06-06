@@ -3,10 +3,12 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHouse, faFolder, faUser, faEnvelope, faVrCardboard } from '@fortawesome/free-solid-svg-icons';
+import { faHouse, faFolder, faUser, faEnvelope, faVrCardboard, faMoon, faSun } from '@fortawesome/free-solid-svg-icons';
+import Image from 'next/image';
 import Header from '@/components/Header';
 import VRModal from '@/components/VRModal';
 import Cursor from '@/components/Cursor';
+import { images } from '@/utils/assets';
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 20 },
@@ -22,6 +24,7 @@ export default function Home() {
   const [hoveredIcon, setHoveredIcon] = useState<number | null>(null);
   const [clickedIcon, setClickedIcon] = useState<number | null>(null);
   const [cursorVisible, setCursorVisible] = useState(true);
+  const [darkTheme, setDarkTheme] = useState(true);
 
   // Define icons first, before any functions that use it
   const icons = [
@@ -196,10 +199,13 @@ export default function Home() {
 
           <div className="flex justify-center mt-16 relative">
             <div className="vr-experience w-full md:w-3/4 lg:w-2/3 h-[300px] md:h-[400px] relative overflow-hidden rounded-xl bg-black/20">
-              <img
-                src="/assets/realtime-rendering.jpg"
+              <Image
+                src={images.realtimeRendering}
                 alt="VR Experience"
-                className="absolute inset-0 w-full h-full object-cover opacity-70"
+                className="absolute inset-0 object-cover opacity-70"
+                fill
+                sizes="(max-width: 768px) 100vw, 75vw"
+                priority
               />
               <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent flex items-center">
                 <div className="p-8">
@@ -256,10 +262,13 @@ export default function Home() {
               onMouseLeave={handleMouseLeave}
             >
               <div className="relative h-full w-full">
-                <img
-                  src="/assets/panoramic-view.jpg"
+                <Image
+                  src={images.panoramicView}
                   alt="360° Panoramic Views"
-                  className="absolute inset-0 h-full w-full object-cover"
+                  className="absolute inset-0 object-cover"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 66vw"
+                  priority
                 />
                 <div className="absolute bottom-0 left-0 w-full p-6 bg-gradient-to-t from-black/80 to-transparent">
                   <h3 className="text-2xl font-medium text-white" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
@@ -286,10 +295,12 @@ export default function Home() {
               onMouseLeave={handleMouseLeave}
             >
               <div className="relative h-full w-full">
-                <img
-                  src="/assets/surrounding-info.jpg"
+                <Image
+                  src={images.surroundingInfo}
                   alt="Surrounding Information"
-                  className="absolute inset-0 h-full w-full object-cover"
+                  className="absolute inset-0 object-cover"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 33vw"
                 />
                 <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black/80 to-transparent">
                   <h3 className="text-xl font-medium text-white" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
@@ -316,10 +327,12 @@ export default function Home() {
               onMouseLeave={handleMouseLeave}
             >
               <div className="relative h-full w-full">
-                <img
-                  src="/assets/archviz-app.jpg"
+                <Image
+                  src={images.archvizApp}
                   alt="Archviz Application"
-                  className="absolute inset-0 h-full w-full object-cover"
+                  className="absolute inset-0 object-cover"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 33vw"
                 />
                 <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black/80 to-transparent">
                   <h3 className="text-xl font-medium text-white" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
@@ -346,10 +359,12 @@ export default function Home() {
               onMouseLeave={handleMouseLeave}
             >
               <div className="relative h-full w-full">
-                <img
-                  src="/assets/realtime-rendering.jpg"
+                <Image
+                  src={images.realtimeRendering}
                   alt="Real-Time Rendering"
-                  className="absolute inset-0 h-full w-full object-cover"
+                  className="absolute inset-0 object-cover"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 66vw"
                 />
                 <div className="absolute bottom-0 left-0 w-full p-6 bg-gradient-to-t from-black/80 to-transparent">
                   <h3 className="text-2xl font-medium text-white" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
@@ -391,11 +406,13 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Service 1: Photorealistic Rendering */}
             <div className="about-card h-full" onMouseEnter={() => handleMouseEnter("button")} onMouseLeave={handleMouseLeave}>
-              <div className="mb-4 aspect-[4/3] overflow-hidden rounded-lg">
-                <img
-                  src="/assets/photorealistic-rendering.jpg"
+              <div className="mb-4 aspect-[4/3] overflow-hidden rounded-lg relative">
+                <Image
+                  src={images.photorealisticRendering}
                   alt="Photorealistic Rendering"
-                  className="w-full h-full object-cover"
+                  className="object-cover"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 25vw"
                 />
               </div>
               <h3 className="text-xl font-medium mb-2" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
@@ -408,11 +425,13 @@ export default function Home() {
 
             {/* Service 2: 3D Walkthrough & Animation */}
             <div className="about-card h-full" onMouseEnter={() => handleMouseEnter("button")} onMouseLeave={handleMouseLeave}>
-              <div className="mb-4 aspect-[4/3] overflow-hidden rounded-lg">
-                <img
-                  src="/assets/3d-walkthrough.jpg"
+              <div className="mb-4 aspect-[4/3] overflow-hidden rounded-lg relative">
+                <Image
+                  src={images.walkthrough3d}
                   alt="3D Walkthrough & Animation"
-                  className="w-full h-full object-cover"
+                  className="object-cover"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 25vw"
                 />
               </div>
               <h3 className="text-xl font-medium mb-2" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
@@ -425,11 +444,13 @@ export default function Home() {
 
             {/* Service 3: 360° Virtual Tours & VR */}
             <div className="about-card h-full" onMouseEnter={() => handleMouseEnter("button")} onMouseLeave={handleMouseLeave}>
-              <div className="mb-4 aspect-[4/3] overflow-hidden rounded-lg">
-                <img
-                  src="/assets/360-virtual-tours.jpg"
+              <div className="mb-4 aspect-[4/3] overflow-hidden rounded-lg relative">
+                <Image
+                  src={images.virtualTours}
                   alt="360° Virtual Tours & VR"
-                  className="w-full h-full object-cover"
+                  className="object-cover"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 25vw"
                 />
               </div>
               <h3 className="text-xl font-medium mb-2" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
@@ -442,11 +463,13 @@ export default function Home() {
 
             {/* Service 4: Real-time Interactive Experiences */}
             <div className="about-card h-full" onMouseEnter={() => handleMouseEnter("button")} onMouseLeave={handleMouseLeave}>
-              <div className="mb-4 aspect-[4/3] overflow-hidden rounded-lg">
-                <img
-                  src="/assets/interactive-experiences.jpg"
+              <div className="mb-4 aspect-[4/3] overflow-hidden rounded-lg relative">
+                <Image
+                  src={images.interactiveExperiences}
                   alt="Real-time Interactive Experiences"
-                  className="w-full h-full object-cover"
+                  className="object-cover"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 25vw"
                 />
               </div>
               <h3 className="text-xl font-medium mb-2" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
@@ -654,26 +677,38 @@ export default function Home() {
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-              <div className="about-card p-0 overflow-hidden" onMouseEnter={() => handleMouseEnter("button")} onMouseLeave={handleMouseLeave}>
-                <img
-                  src="/assets/photorealistic-rendering.jpg"
-                  alt="Visual Showcase"
-                  className="h-full w-full object-cover transition-transform hover:scale-105"
-                />
+              <div className="about-card p-0 overflow-hidden relative" onMouseEnter={() => handleMouseEnter("button")} onMouseLeave={handleMouseLeave}>
+                <div className="relative w-full h-48">
+                  <Image
+                    src={images.photorealisticRendering}
+                    alt="Visual Showcase"
+                    className="object-cover transition-transform hover:scale-105"
+                    fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                  />
+                </div>
               </div>
-              <div className="about-card p-0 overflow-hidden" onMouseEnter={() => handleMouseEnter("button")} onMouseLeave={handleMouseLeave}>
-                <img
-                  src="/assets/360-virtual-tours.jpg"
-                  alt="Visual Showcase"
-                  className="h-full w-full object-cover transition-transform hover:scale-105"
-                />
+              <div className="about-card p-0 overflow-hidden relative" onMouseEnter={() => handleMouseEnter("button")} onMouseLeave={handleMouseLeave}>
+                <div className="relative w-full h-48">
+                  <Image
+                    src={images.virtualTours}
+                    alt="Visual Showcase"
+                    className="object-cover transition-transform hover:scale-105"
+                    fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                  />
+                </div>
               </div>
-              <div className="about-card p-0 overflow-hidden" onMouseEnter={() => handleMouseEnter("button")} onMouseLeave={handleMouseLeave}>
-                <img
-                  src="/assets/interactive-experiences.jpg"
-                  alt="Visual Showcase"
-                  className="h-full w-full object-cover transition-transform hover:scale-105"
-                />
+              <div className="about-card p-0 overflow-hidden relative" onMouseEnter={() => handleMouseEnter("button")} onMouseLeave={handleMouseLeave}>
+                <div className="relative w-full h-48">
+                  <Image
+                    src={images.interactiveExperiences}
+                    alt="Visual Showcase"
+                    className="object-cover transition-transform hover:scale-105"
+                    fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                  />
+                </div>
               </div>
             </div>
 
@@ -896,8 +931,29 @@ export default function Home() {
     <div className="relative">
       {/* Background Effects */}
       <div className="fixed inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(17,24,39,1),rgba(0,0,0,1))]" />
-      <div className="fixed inset-0">
+      
+      {/* Animated Glass Background Effect */}
+      <div className="fixed inset-0 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-emerald-500/5" />
+        
+        {/* Animated Glass Orbs */}
+        <div className="absolute top-1/4 left-1/4 w-[40vw] h-[40vw] rounded-full bg-emerald-900/5 blur-3xl animate-pulse" 
+             style={{ animationDuration: '15s' }} />
+        <div className="absolute bottom-1/4 right-1/4 w-[30vw] h-[30vw] rounded-full bg-blue-900/5 blur-3xl animate-pulse" 
+             style={{ animationDuration: '12s', animationDelay: '2s' }} />
+        <div className="absolute top-3/4 right-1/3 w-[20vw] h-[20vw] rounded-full bg-purple-900/5 blur-3xl animate-pulse" 
+             style={{ animationDuration: '20s', animationDelay: '5s' }} />
+             
+        {/* Moving Glass Lines */}
+        <div className="absolute inset-0">
+          <div className="absolute w-full h-[1px] bg-gradient-to-r from-transparent via-white/5 to-transparent top-1/4 animate-[gradient-x_15s_linear_infinite]"></div>
+          <div className="absolute w-full h-[1px] bg-gradient-to-r from-transparent via-white/5 to-transparent top-2/4 animate-[gradient-x_25s_linear_infinite_reverse]"></div>
+          <div className="absolute w-full h-[1px] bg-gradient-to-r from-transparent via-white/5 to-transparent top-3/4 animate-[gradient-x_20s_linear_infinite]"></div>
+        </div>
+      </div>
+      
+      {/* Rest of the existing background elements */}
+      <div className="fixed inset-0">
         <div className="absolute -top-[30%] -right-[20%] w-[80%] h-[80%] rounded-full bg-emerald-900/10 blur-3xl" />
         <div className="absolute -bottom-[30%] -left-[20%] w-[80%] h-[80%] rounded-full bg-emerald-900/10 blur-3xl" />
       </div>
@@ -947,6 +1003,16 @@ export default function Home() {
                 </span>
               </button>
             ))}
+            
+            {/* Theme Toggle Button */}
+            <button
+              className="nav-button ml-2 border-l border-white/10 pl-2"
+              onMouseEnter={() => handleIconHover(null)}
+              onMouseLeave={() => handleIconHover(null)}
+              onClick={() => setDarkTheme(!darkTheme)}
+            >
+              <FontAwesomeIcon icon={darkTheme ? faSun : faMoon} className="text-lg" />
+            </button>
           </div>
         </div>
       </div>
