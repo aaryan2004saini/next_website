@@ -19,9 +19,26 @@ const Cursor: React.FC<CursorProps> = ({
   const [isInitialized, setIsInitialized] = useState(false);
   const cursorRef = useRef<HTMLDivElement>(null);
   const [isNavItem, setIsNavItem] = useState(false);
+  const requestRef = useRef<number | null>(null);
+
+  // Handle smooth cursor movement using requestAnimationFrame
+  const updateCursorPosition = (clientX: number, clientY: number) => {
+    if (!cursorRef.current) return;
+    
+    const x = clientX;
+    const y = clientY;
+    
+    setPosition({ x, y });
+  };
 
   // Set up global event listeners to automatically handle text cursor behavior
   useEffect(() => {
+    // Ensure this is the only cursor in the app
+    const existingCursors = document.querySelectorAll('.cursor-container');
+    if (existingCursors.length > 1) {
+      console.warn('Multiple cursor instances detected');
+    }
+
     // Ensure the default cursor is disabled
     document.documentElement.style.cursor = 'none';
     document.body.style.cursor = 'none';
@@ -35,15 +52,30 @@ const Cursor: React.FC<CursorProps> = ({
     `;
     document.head.appendChild(styleTag);
     
-    // Update cursor position on mouse move
-    const updatePosition = (e: MouseEvent) => {
-      setPosition({ x: e.clientX, y: e.clientY });
-      if (!isInitialized) {
-        setIsInitialized(true);
+    // Update cursor position on mouse move using RAF for better performance
+    const handleMouseMove = (e: MouseEvent) => {
+      if (requestRef.current) {
+        cancelAnimationFrame(requestRef.current);
+      }
+      
+      requestRef.current = requestAnimationFrame(() => {
+        updateCursorPosition(e.clientX, e.clientY);
+        if (!isInitialized) {
+          setIsInitialized(true);
+        }
+      });
+    };
+    
+    // Also update cursor position on scroll to ensure it stays with the viewport
+    const handleScroll = () => {
+      // Only update if we have a last known mouse position
+      if (position.x > 0 && position.y > 0) {
+        // We don't need to change the position on scroll since the cursor
+        // is fixed to the viewport, not the document
       }
     };
 
-    // Set up global listeners for text elements to show text cursor
+    // Set up global listeners for element interactions
     const addElementListeners = () => {
       // Find all text elements that should show the text cursor
       const textElements = document.querySelectorAll(
@@ -145,8 +177,9 @@ const Cursor: React.FC<CursorProps> = ({
       };
     };
 
-    // Listen for mousemove events
-    window.addEventListener('mousemove', updatePosition);
+    // Listen for mousemove and scroll events
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    window.addEventListener('scroll', handleScroll, { passive: true });
     
     // Set up a mutation observer to handle dynamically added elements
     const observer = new MutationObserver(() => {
@@ -165,12 +198,17 @@ const Cursor: React.FC<CursorProps> = ({
     
     // Clean up all event listeners on unmount
     return () => {
-      window.removeEventListener('mousemove', updatePosition);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('scroll', handleScroll);
       observer.disconnect();
       cleanup();
       document.head.removeChild(styleTag);
+      
+      if (requestRef.current) {
+        cancelAnimationFrame(requestRef.current);
+      }
     };
-  }, [isInitialized]);
+  }, [isInitialized, position.x, position.y]);
 
   // Get cursor mode - either from props or from body attribute
   const getCursorMode = () => {
@@ -200,6 +238,8 @@ const Cursor: React.FC<CursorProps> = ({
       style={{
         left: `${position.x}px`,
         top: `${position.y}px`,
+        pointerEvents: 'none',
+        position: 'fixed'
       }}
     >
       <div 
