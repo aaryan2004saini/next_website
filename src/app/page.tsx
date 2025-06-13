@@ -17,7 +17,6 @@ const fadeInUp = {
 
 export default function Home() {
   const [hoveredElement, setHoveredElement] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState("home");
   const [showVRModal, setShowVRModal] = useState(false);
   const [panoramaPosition, setPanoramaPosition] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
@@ -26,7 +25,14 @@ export default function Home() {
   const [cursorVisible, setCursorVisible] = useState(true);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const particlesRef = useRef<any[]>([]);
+  const particlesRef = useRef<Array<{
+    x: number;
+    y: number;
+    size: number;
+    speedX: number;
+    speedY: number;
+    color: string;
+  }>>([]);
   const animationFrameRef = useRef<number | null>(null);
 
   // Define icons first, before any functions that use it
@@ -66,10 +72,6 @@ export default function Home() {
     setHoveredElement(null);
   }, []);
 
-  const handleVRButtonClick = useCallback(() => {
-    setShowVRModal(true);
-  }, []);
-
   const handleIconHover = (index: number | null) => {
     setHoveredIcon(index);
   };
@@ -87,15 +89,6 @@ export default function Home() {
       }
     }
   };
-
-  // Helper function to uniformly apply text interactions
-  const withTextInteraction = (Component: React.ElementType, props: any = {}) => (
-    <Component
-      {...props}
-      onMouseEnter={() => handleMouseEnter("text")}
-      onMouseLeave={handleMouseLeave}
-    />
-  );
 
   const sections = [
     {
@@ -128,7 +121,7 @@ export default function Home() {
                 visible: { opacity: 1, y: 0, transition: { delay: 0.3 } }
               }}
             >
-              Experience your architectural designs in stunning detail before they're built. Our cutting-edge 3D visualization brings your vision to life with photorealistic quality.
+              Experience your architectural designs in stunning detail before they&apos;re built. Our cutting-edge 3D visualization brings your vision to life with photorealistic quality.
             </motion.p>
 
             <div className="flex flex-wrap gap-4 justify-center">

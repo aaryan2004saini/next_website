@@ -12,7 +12,6 @@ export default function ClientLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [cursorVariant, setCursorVariant] = useState('default');
   const [cursorVisible, setCursorVisible] = useState(true);
 
   useEffect(() => {
@@ -37,7 +36,7 @@ export default function ClientLayout({
   return (
     <>
       {/* Use the unified cursor component */}
-      <Cursor cursorVariant={cursorVariant} cursorVisible={cursorVisible} />
+      <Cursor cursorVisible={cursorVisible} />
 
       <div className="min-h-screen">
         {children}
