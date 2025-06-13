@@ -24,6 +24,10 @@ export default function Home() {
   const [hoveredIcon, setHoveredIcon] = useState<number | null>(null);
   const [clickedIcon, setClickedIcon] = useState<number | null>(null);
   const [cursorVisible, setCursorVisible] = useState(true);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const particlesRef = useRef<any[]>([]);
+  const animationFrameRef = useRef<number | null>(null);
 
   // Define icons first, before any functions that use it
   const icons = [
@@ -127,7 +131,7 @@ export default function Home() {
               Experience your architectural designs in stunning detail before they're built. Our cutting-edge 3D visualization brings your vision to life with photorealistic quality.
             </motion.p>
 
-            <div className="flex flex-wrap gap-4">
+            <div className="flex flex-wrap gap-4 justify-center">
               <motion.button
                 className="glass-button px-8 py-4 bg-emerald-500/20 hover:bg-emerald-500/30 text-lg"
                 whileHover={{ scale: 1.05 }}
@@ -209,21 +213,23 @@ export default function Home() {
                 priority
               />
               <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent flex items-center">
-                <div className="p-8">
+                <div className="p-8 w-full">
                   <h3 className="text-2xl md:text-3xl font-medium mb-4" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
                     Virtual Reality Experience
                   </h3>
                   <p className="text-white/70 mb-6 max-w-md" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
                     Try our immersive VR demo and explore architectural spaces like never before. Feel the scale, lighting, and atmosphere of your future project.
                   </p>
-                  <button
-                    className="glass-button px-6 py-3 bg-emerald-500/20 hover:bg-emerald-500/30"
-                    onClick={() => setShowVRModal(true)}
-                    onMouseEnter={() => handleMouseEnter("button")}
-                    onMouseLeave={handleMouseLeave}
-                  >
-                    Launch Demo
-                  </button>
+                  <div className="flex justify-center">
+                    <button
+                      className="glass-button px-6 py-3 bg-emerald-500/20 hover:bg-emerald-500/30"
+                      onClick={() => setShowVRModal(true)}
+                      onMouseEnter={() => handleMouseEnter("button")}
+                      onMouseLeave={handleMouseLeave}
+                    >
+                      Launch Demo
+                    </button>
+                  </div>
                 </div>
               </div>
               <div className="absolute bottom-4 right-4 flex gap-2">
@@ -974,35 +980,193 @@ export default function Home() {
     },
   ];
 
+  // Particle animation effect
+  useEffect(() => {
+    if (!canvasRef.current) return;
+
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Set canvas size
+    const setCanvasSize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+
+    // Initialize particles
+    const initParticles = () => {
+      particlesRef.current = [];
+      const particleCount = Math.floor(window.innerWidth / 10); // Adjust particle density
+      
+      for (let i = 0; i < particleCount; i++) {
+        particlesRef.current.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          size: Math.random() * 1.5 + 0.5,
+          speedX: Math.random() * 0.5 - 0.25,
+          speedY: Math.random() * 0.5 - 0.25,
+          color: `rgba(16, 185, 129, ${Math.random() * 0.3 + 0.1})`,
+        });
+      }
+    };
+
+    // Animation loop
+    const animate = () => {
+      if (!ctx || !canvas) return;
+      
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      particlesRef.current.forEach((particle, index) => {
+        // Calculate distance from mouse
+        const dx = mousePosition.x - particle.x;
+        const dy = mousePosition.y - particle.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        // Move away from mouse if close
+        if (distance < 100) {
+          const angle = Math.atan2(dy, dx);
+          const force = (100 - distance) / 500;
+          particle.x -= Math.cos(angle) * force * 5;
+          particle.y -= Math.sin(angle) * force * 5;
+        }
+        
+        // Update position
+        particle.x += particle.speedX;
+        particle.y += particle.speedY;
+        
+        // Bounce off edges
+        if (particle.x < 0 || particle.x > canvas.width) particle.speedX *= -1;
+        if (particle.y < 0 || particle.y > canvas.height) particle.speedY *= -1;
+        
+        // Draw particle
+        ctx.fillStyle = particle.color;
+        ctx.beginPath();
+        ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Connect nearby particles
+        for (let j = index + 1; j < particlesRef.current.length; j++) {
+          const otherParticle = particlesRef.current[j];
+          const dx = particle.x - otherParticle.x;
+          const dy = particle.y - otherParticle.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          
+          if (distance < 80) {
+            ctx.beginPath();
+            ctx.strokeStyle = `rgba(16, 185, 129, ${0.1 * (1 - distance / 80)})`; // Fade with distance
+            ctx.lineWidth = 0.2;
+            ctx.moveTo(particle.x, particle.y);
+            ctx.lineTo(otherParticle.x, otherParticle.y);
+            ctx.stroke();
+          }
+        }
+      });
+      
+      animationFrameRef.current = requestAnimationFrame(animate);
+    };
+
+    // Mouse move handler
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({ x: e.clientX, y: e.clientY });
+    };
+
+    // Set up and start animation
+    setCanvasSize();
+    initParticles();
+    animate();
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('resize', () => {
+      setCanvasSize();
+      initParticles();
+    });
+
+    // Clean up
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('resize', setCanvasSize);
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
+  }, [mousePosition]);
+
   return (
     <div className="relative">
-      {/* Background Effects */}
-      <div className="fixed inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(17,24,39,1),rgba(0,0,0,1))]" />
+      {/* Interactive Particle Background */}
+      <canvas 
+        ref={canvasRef} 
+        className="fixed inset-0 z-0 pointer-events-none"
+      />
+
+      {/* Background Effects - Lightened Further */}
+      <div className="fixed inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(16,185,129,0.2),rgba(15,40,35,0.85))]" />
       
       {/* Animated Glass Background Effect */}
       <div className="fixed inset-0 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-emerald-500/5" />
+        <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 via-transparent to-emerald-500/20" />
         
-        {/* Animated Glass Orbs */}
-        <div className="absolute top-1/4 left-1/4 w-[40vw] h-[40vw] rounded-full bg-emerald-900/5 blur-3xl animate-pulse" 
+        {/* Animated Glass Orbs - Lightened */}
+        <div className="absolute top-1/4 left-1/4 w-[40vw] h-[40vw] rounded-full bg-emerald-900/20 blur-3xl animate-pulse" 
              style={{ animationDuration: '15s' }} />
-        <div className="absolute bottom-1/4 right-1/4 w-[30vw] h-[30vw] rounded-full bg-blue-900/5 blur-3xl animate-pulse" 
+        <div className="absolute bottom-1/4 right-1/4 w-[30vw] h-[30vw] rounded-full bg-emerald-600/20 blur-3xl animate-pulse" 
              style={{ animationDuration: '12s', animationDelay: '2s' }} />
-        <div className="absolute top-3/4 right-1/3 w-[20vw] h-[20vw] rounded-full bg-purple-900/5 blur-3xl animate-pulse" 
+        <div className="absolute top-3/4 right-1/3 w-[20vw] h-[20vw] rounded-full bg-emerald-700/20 blur-3xl animate-pulse" 
              style={{ animationDuration: '20s', animationDelay: '5s' }} />
              
         {/* Moving Glass Lines */}
         <div className="absolute inset-0">
-          <div className="absolute w-full h-[1px] bg-gradient-to-r from-transparent via-white/5 to-transparent top-1/4 animate-[gradient-x_15s_linear_infinite]"></div>
-          <div className="absolute w-full h-[1px] bg-gradient-to-r from-transparent via-white/5 to-transparent top-2/4 animate-[gradient-x_25s_linear_infinite_reverse]"></div>
-          <div className="absolute w-full h-[1px] bg-gradient-to-r from-transparent via-white/5 to-transparent top-3/4 animate-[gradient-x_20s_linear_infinite]"></div>
+          <div className="absolute w-full h-[1px] bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent top-1/4 animate-[gradient-x_15s_linear_infinite]"></div>
+          <div className="absolute w-full h-[1px] bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent top-2/4 animate-[gradient-x_25s_linear_infinite_reverse]"></div>
+          <div className="absolute w-full h-[1px] bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent top-3/4 animate-[gradient-x_20s_linear_infinite]"></div>
+        </div>
+        
+        {/* Floating 3D Objects */}
+        <div className="absolute top-[15%] left-[10%] w-24 h-24 opacity-20 animate-float" style={{ animationDelay: '0s' }}>
+          <svg className="w-full h-full text-emerald-400" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 22L3 17V7L12 2L21 7V17L12 22Z" stroke="currentColor" strokeWidth="0.5" fill="currentColor" fillOpacity="0.2" />
+          </svg>
+        </div>
+        <div className="absolute top-[45%] right-[15%] w-16 h-16 opacity-20 animate-rotate-3d" style={{ animationDelay: '1s' }}>
+          <svg className="w-full h-full text-emerald-300" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" strokeWidth="0.5" fill="currentColor" fillOpacity="0.2" />
+            <path d="M2 17L12 22L22 17" stroke="currentColor" strokeWidth="0.5" fill="currentColor" fillOpacity="0.2" />
+            <path d="M2 12L12 17L22 12" stroke="currentColor" strokeWidth="0.5" fill="currentColor" fillOpacity="0.2" />
+          </svg>
+        </div>
+        <div className="absolute bottom-[20%] left-[20%] w-20 h-20 opacity-20 animate-float-slow" style={{ animationDelay: '2s' }}>
+          <svg className="w-full h-full text-emerald-200" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 7L17 10.5V17.5L12 21L7 17.5V10.5L12 7Z" stroke="currentColor" strokeWidth="0.5" fill="currentColor" fillOpacity="0.2" />
+            <path d="M12 7V2M7 10.5L2 7M17 10.5L22 7" stroke="currentColor" strokeWidth="0.5" />
+          </svg>
+        </div>
+        <div className="absolute top-[35%] left-[30%] w-16 h-16 opacity-15 animate-spin-slow">
+          <svg className="w-full h-full text-emerald-500" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="0.5" fill="currentColor" fillOpacity="0.1" />
+            <path d="M12 2V4M12 20V22M2 12H4M20 12H22M4.93 4.93L6.34 6.34M17.66 17.66L19.07 19.07M4.93 19.07L6.34 17.66M17.66 6.34L19.07 4.93" stroke="currentColor" strokeWidth="0.5" />
+          </svg>
+        </div>
+        <div className="absolute bottom-[35%] right-[25%] w-20 h-20 opacity-15 animate-spin-reverse">
+          <svg className="w-full h-full text-emerald-400" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="8" stroke="currentColor" strokeWidth="0.5" fill="currentColor" fillOpacity="0.1" />
+            <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="0.5" fill="currentColor" fillOpacity="0.1" />
+            <path d="M12 4V8M12 16V20M4 12H8M16 12H20" stroke="currentColor" strokeWidth="0.5" />
+          </svg>
+        </div>
+        <div className="absolute top-[65%] right-[10%] w-24 h-24 opacity-20 animate-float-slower" style={{ animationDelay: '3s' }}>
+          <svg className="w-full h-full text-emerald-600" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L21 6.5V17.5L12 22L3 17.5V6.5L12 2Z" stroke="currentColor" strokeWidth="0.5" fill="currentColor" fillOpacity="0.1" />
+            <path d="M12 2L12 22" stroke="currentColor" strokeWidth="0.5" />
+            <path d="M3 6.5L21 6.5" stroke="currentColor" strokeWidth="0.5" />
+            <path d="M3 17.5L21 17.5" stroke="currentColor" strokeWidth="0.5" />
+          </svg>
         </div>
       </div>
       
-      {/* Rest of the existing background elements */}
+      {/* Rest of the existing background elements - Lightened */}
       <div className="fixed inset-0">
-        <div className="absolute -top-[30%] -right-[20%] w-[80%] h-[80%] rounded-full bg-emerald-900/10 blur-3xl" />
-        <div className="absolute -bottom-[30%] -left-[20%] w-[80%] h-[80%] rounded-full bg-emerald-900/10 blur-3xl" />
+        <div className="absolute -top-[30%] -right-[20%] w-[80%] h-[80%] rounded-full bg-emerald-900/25 blur-3xl" />
+        <div className="absolute -bottom-[30%] -left-[20%] w-[80%] h-[80%] rounded-full bg-emerald-900/25 blur-3xl" />
       </div>
 
       {/* Custom cursor as a separate component */}
@@ -1020,6 +1184,122 @@ export default function Home() {
             {section.content}
           </div>
         ))}
+        
+        {/* Footer */}
+        <footer className="mt-24 mb-16">
+          <div className="glass-morphism p-8">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+              <div>
+                <div className="mb-4">
+                  <Image
+                    src="/assets/flik-logo.png"
+                    alt="Flik Logo"
+                    width={120}
+                    height={48}
+                    className="object-contain"
+                  />
+                </div>
+                <p className="text-white/70 text-sm mb-4" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
+                  Flik is a premier architectural visualization studio creating immersive experiences with cutting-edge technology.
+                </p>
+                <div className="flex gap-4">
+                  <a
+                    href="#"
+                    className="bg-black/40 p-2 rounded-lg hover:bg-emerald-900/40 transition-colors duration-300"
+                    onMouseEnter={() => handleMouseEnter("button")}
+                    onMouseLeave={handleMouseLeave}
+                  >
+                    <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z" />
+                    </svg>
+                  </a>
+                  <a
+                    href="#"
+                    className="bg-black/40 p-2 rounded-lg hover:bg-emerald-900/40 transition-colors duration-300"
+                    onMouseEnter={() => handleMouseEnter("button")}
+                    onMouseLeave={handleMouseLeave}
+                  >
+                    <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                    </svg>
+                  </a>
+                  <a
+                    href="#"
+                    className="bg-black/40 p-2 rounded-lg hover:bg-emerald-900/40 transition-colors duration-300"
+                    onMouseEnter={() => handleMouseEnter("button")}
+                    onMouseLeave={handleMouseLeave}
+                  >
+                    <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
+                    </svg>
+                  </a>
+                </div>
+              </div>
+              
+              <div>
+                <h4 className="text-lg font-medium mb-4" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
+                  Services
+                </h4>
+                <ul className="space-y-2 text-white/70">
+                  <li><a href="#services" className="hover:text-emerald-300 transition-colors" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>Photorealistic Rendering</a></li>
+                  <li><a href="#services" className="hover:text-emerald-300 transition-colors" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>3D Walkthrough & Animation</a></li>
+                  <li><a href="#services" className="hover:text-emerald-300 transition-colors" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>360° Virtual Tours & VR</a></li>
+                  <li><a href="#services" className="hover:text-emerald-300 transition-colors" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>Real-time Interactive Experiences</a></li>
+                </ul>
+              </div>
+              
+              <div>
+                <h4 className="text-lg font-medium mb-4" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
+                  Company
+                </h4>
+                <ul className="space-y-2 text-white/70">
+                  <li><a href="#about" className="hover:text-emerald-300 transition-colors" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>About Us</a></li>
+                  <li><a href="#portfolio" className="hover:text-emerald-300 transition-colors" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>Portfolio</a></li>
+                  <li><a href="#" className="hover:text-emerald-300 transition-colors" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>Careers</a></li>
+                  <li><a href="#" className="hover:text-emerald-300 transition-colors" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>Blog</a></li>
+                </ul>
+              </div>
+              
+              <div>
+                <h4 className="text-lg font-medium mb-4" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
+                  Contact
+                </h4>
+                <ul className="space-y-3 text-white/70 text-sm">
+                  <li className="flex items-start gap-3" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
+                    <svg className="w-4 h-4 text-emerald-400 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    <span>123 Design Studio, Creative District<br />San Francisco, CA 94103</span>
+                  </li>
+                  <li className="flex items-start gap-3" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
+                    <svg className="w-4 h-4 text-emerald-400 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    <span>info@flikvisuals.com</span>
+                  </li>
+                  <li className="flex items-start gap-3" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
+                    <svg className="w-4 h-4 text-emerald-400 mt-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                    </svg>
+                    <span>+1 (555) 123-4567</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            
+            <div className="mt-10 pt-6 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
+              <p className="text-sm text-white/50" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
+                © {new Date().getFullYear()} Flik Visuals. All rights reserved.
+              </p>
+              <div className="flex gap-6 text-sm text-white/50">
+                <a href="#" className="hover:text-white transition-colors" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>Privacy Policy</a>
+                <a href="#" className="hover:text-white transition-colors" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>Terms of Service</a>
+                <a href="#" className="hover:text-white transition-colors" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>Cookies</a>
+              </div>
+            </div>
+          </div>
+        </footer>
       </div>
 
       {/* VR Modal */}
@@ -1032,27 +1312,29 @@ export default function Home() {
         setZoom={setZoom}
       />
 
-      {/* Floating bottom navigation */}
-      <div className="bottom-navigation">
-        <div className={`navbar-container ${clickedIcon !== null ? 'navbar-expanded' : ''}`}>
-          <div className="navbar-buttons-container">
-            {icons.map((item, index) => (
-              <button
-                key={index}
-                className={`nav-button ${clickedIcon === index ? 'active' : ''}`}
-                onMouseEnter={() => handleIconHover(index)}
-                onMouseLeave={() => handleIconHover(null)}
-                onClick={() => handleIconClick(index)}
-              >
-                <FontAwesomeIcon icon={item.icon} className="text-lg" />
-                <span className="nav-button-label">
-                  {item.label}
-                </span>
-              </button>
-            ))}
+      {/* Floating bottom navigation - Hidden when VR modal is shown */}
+      {!showVRModal && (
+        <div className="bottom-navigation">
+          <div className={`navbar-container ${clickedIcon !== null ? 'navbar-expanded' : ''}`}>
+            <div className="navbar-buttons-container">
+              {icons.map((item, index) => (
+                <button
+                  key={index}
+                  className={`nav-button ${clickedIcon === index ? 'active' : ''}`}
+                  onMouseEnter={() => handleIconHover(index)}
+                  onMouseLeave={() => handleIconHover(null)}
+                  onClick={() => handleIconClick(index)}
+                >
+                  <FontAwesomeIcon icon={item.icon} className="text-lg" />
+                  <span className="nav-button-label">
+                    {item.label}
+                  </span>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

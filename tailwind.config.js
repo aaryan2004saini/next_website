@@ -24,6 +24,11 @@ module.exports = {
         'gradient-xy': 'gradient-xy 15s ease infinite',
         'pulse': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
         'float': 'float 6s ease-in-out infinite',
+        'float-slow': 'float 8s ease-in-out infinite',
+        'float-slower': 'float 12s ease-in-out infinite',
+        'spin-slow': 'spin 8s linear infinite',
+        'spin-reverse': 'spin-reverse 8s linear infinite',
+        'rotate-3d': 'rotate-3d 10s ease infinite',
       },
       keyframes: {
         'gradient-y': {
@@ -74,6 +79,31 @@ module.exports = {
           '50%': {
             transform: 'translateY(-10px)',
           },
+        },
+        'spin-reverse': {
+          'from': {
+            transform: 'rotate(360deg)'
+          },
+          'to': {
+            transform: 'rotate(0deg)'
+          }
+        },
+        'rotate-3d': {
+          '0%': {
+            transform: 'perspective(1000px) rotateX(0) rotateY(0)'
+          },
+          '25%': {
+            transform: 'perspective(1000px) rotateX(10deg) rotateY(10deg)'
+          },
+          '50%': {
+            transform: 'perspective(1000px) rotateX(0) rotateY(20deg)'
+          },
+          '75%': {
+            transform: 'perspective(1000px) rotateX(-10deg) rotateY(10deg)'
+          },
+          '100%': {
+            transform: 'perspective(1000px) rotateX(0) rotateY(0)'
+          }
         },
       },
     },
