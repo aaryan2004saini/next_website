@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faVrCardboard, faTimes, faPlus, faMinus, faHandPointer } from '@fortawesome/free-solid-svg-icons';
+import { faVrCardboard, faTimes } from '@fortawesome/free-solid-svg-icons';
 
 interface VRModalProps {
   showVRModal: boolean;
@@ -16,9 +16,7 @@ interface VRModalProps {
 const VRModal: React.FC<VRModalProps> = ({
   showVRModal,
   setShowVRModal,
-  panoramaPosition,
   setPanoramaPosition,
-  zoom,
   setZoom,
 }) => {
   const [isVRMode, setIsVRMode] = useState(false);
