@@ -410,3 +410,73 @@ input, textarea, [contenteditable] {
   border: 1px solid rgba(255, 255, 255, 0.18);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
+
+/* Add these styles to improve mobile responsiveness */
+
+/* Adjust bottom navigation for mobile */
+@media (max-width: 640px) {
+  .bottom-navigation {
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+  
+  .navbar-container {
+    padding: 0.5rem;
+  }
+  
+  .nav-button {
+    padding: 0.5rem 0.75rem;
+  }
+}
+
+/* Ensure consistent section spacing on mobile */
+@media (max-width: 768px) {
+  .section {
+    margin-bottom: 3rem;
+  }
+  
+  .section-title {
+    font-size: 1.75rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .section-description {
+    font-size: 0.875rem;
+  }
+  
+  .glass-morphism {
+    border-radius: 0.75rem;
+  }
+  
+  /* Improve touch targets on mobile */
+  button, 
+  .glass-button,
+  .nav-button,
+  a {
+    min-height: 2.5rem;
+    min-width: 2.5rem;
+  }
+}
+
+/* Ensure text remains readable at all screen sizes */
+.text-white\/70 {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Add these styles for the time-widget in mobile view */
+.time-widget {
+  display: flex;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+@media (max-width: 768px) {
+  .time-widget {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .time-widget:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  }
+}

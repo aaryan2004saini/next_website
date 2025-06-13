@@ -1,10 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
-import Image from 'next/image';
+import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faVrCardboard, faTimes, faPlus, faMinus, faHandPointer } from '@fortawesome/free-solid-svg-icons';
-import { images } from '@/utils/assets';
 
 interface VRModalProps {
   showVRModal: boolean;
@@ -24,49 +22,51 @@ const VRModal: React.FC<VRModalProps> = ({
   setZoom,
 }) => {
   const [isVRMode, setIsVRMode] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const coohomUrl = "https://www.coohom.com/pub/tool/panorama/aiwalking?obsPlanId=3FO3N9LICGM8&utm_source=pano_share&uri=%2Fpub%2Ftool%2Fbim%2Fcloud%3Fredirectfinish%3Dtrue%26em%3D0%26uid%3D3FO4L57VAC17%26designid%3D3FO3N9LICGM8%26redirecturl%3D%2Fpub%2Fsaas%2Fapps%2Fproject%2Fdetail%2F3FO3N9LICGM8%26locale%3Den_IN&utm_content=3FO3N9LICGM8&utm_medium=qrcode&locale=en_US";
 
-  const handlePanoramaMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.buttons === 1) {
-      setPanoramaPosition({
-        x: panoramaPosition.x + e.movementX,
-        y: panoramaPosition.y + e.movementY,
-      });
+  // Hide cursor when VR modal is shown
+  useEffect(() => {
+    if (showVRModal) {
+      // Dispatch custom event to hide the cursor
+      window.dispatchEvent(new Event('hideCustomCursor'));
+    } else {
+      // Dispatch custom event to show the cursor when modal closes
+      window.dispatchEvent(new Event('showCustomCursor'));
     }
-  };
+  }, [showVRModal]);
 
-  const handleZoom = (delta: number) => {
-    setZoom(Math.min(Math.max(0.5, zoom + delta * 0.1), 2));
+  // Handle iframe load
+  const handleIframeLoad = () => {
+    setIsLoading(false);
   };
 
   if (!showVRModal) return null;
 
   return (
     <div className="fixed inset-0 z-[60] bg-black">
-      <div
-        className="relative w-full h-full overflow-hidden"
-        onMouseMove={handlePanoramaMove}
-        onWheel={(e) => handleZoom(Math.sign(-e.deltaY))}
-      >
-        <div className="relative w-full h-full">
-          <div 
-            className="w-full h-full absolute" 
-            style={{
-              transform: `translate(${panoramaPosition.x}px, ${panoramaPosition.y}px) scale(${zoom})`,
-              transition: "transform 300ms ease"
-            }}
-          >
-            <Image
-              src={images.panoramicView}
-              alt="360 Panorama"
-              className="object-cover"
-              fill
-              sizes="100vw"
-              priority
-            />
+      <div className="relative w-full h-full overflow-hidden">
+        {/* Loading indicator */}
+        {isLoading && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/80 z-10">
+            <div className="text-white text-center">
+              <div className="w-16 h-16 border-4 border-emerald-400 border-t-transparent rounded-full animate-spin mb-4 mx-auto"></div>
+              <p>Loading VR Experience...</p>
+            </div>
           </div>
-        </div>
+        )}
+        
+        {/* Iframe containing the external VR experience */}
+        <iframe 
+          src={coohomUrl}
+          className="w-full h-full border-0"
+          allow="accelerometer; autoplay; camera; gyroscope; microphone; xr-spatial-tracking"
+          allowFullScreen
+          onLoad={handleIframeLoad}
+        ></iframe>
+
         {/* Controls */}
-        <div className="absolute top-4 right-4 flex items-center gap-4">
+        <div className="absolute top-4 right-4 flex items-center gap-4 z-20">
           <button
             className="px-4 py-2 bg-black/50 hover:bg-black/70 text-white rounded-full transition-all border border-white/20 backdrop-blur-md"
             onClick={() => setIsVRMode(!isVRMode)}
@@ -89,26 +89,6 @@ const VRModal: React.FC<VRModalProps> = ({
             <FontAwesomeIcon icon={faTimes} className="mr-2" />
             Exit Experience
           </button>
-        </div>
-        {/* Navigation Controls */}
-        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex items-center gap-4">
-          <button
-            className="w-12 h-12 bg-black/50 hover:bg-black/70 text-white rounded-full transition-all border border-white/20 backdrop-blur-md flex items-center justify-center"
-            onClick={() => handleZoom(1)}
-          >
-            <FontAwesomeIcon icon={faPlus} />
-          </button>
-          <button
-            className="w-12 h-12 bg-black/50 hover:bg-black/70 text-white rounded-full transition-all border border-white/20 backdrop-blur-md flex items-center justify-center"
-            onClick={() => handleZoom(-1)}
-          >
-            <FontAwesomeIcon icon={faMinus} />
-          </button>
-        </div>
-        {/* Touch Instructions */}
-        <div className="absolute bottom-4 left-4 text-white/70 text-sm backdrop-blur-md bg-black/30 rounded-full px-4 py-2">
-          <FontAwesomeIcon icon={faHandPointer} className="mr-2" />
-          Drag to explore | Scroll to zoom
         </div>
       </div>
     </div>

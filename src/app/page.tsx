@@ -15,6 +15,17 @@ const fadeInUp = {
   visible: { opacity: 1, y: 0 },
 };
 
+// Add responsive font size classes
+const responsiveText = {
+  heading: "text-3xl md:text-4xl lg:text-6xl",
+  subheading: "text-xl md:text-2xl",
+  paragraph: "text-sm md:text-base lg:text-xl",
+  button: "text-sm md:text-base lg:text-lg",
+  sectionTitle: "text-2xl md:text-3xl lg:text-4xl",
+  cardTitle: "text-lg md:text-xl",
+  cardText: "text-xs md:text-sm",
+};
+
 export default function Home() {
   const [hoveredElement, setHoveredElement] = useState<string | null>(null);
   const [showVRModal, setShowVRModal] = useState(false);
@@ -98,105 +109,73 @@ export default function Home() {
           initial="hidden"
           animate="visible"
           variants={fadeInUp}
-          className="section container-wide min-h-[80vh] flex flex-col justify-center"
+          className="section container-wide min-h-[80vh] flex flex-col justify-center px-4 md:px-0"
         >
-          <div className="glass-morphism p-8 mb-10">
-            <motion.h1
-              className="text-4xl md:text-6xl font-bold mb-6 leading-tight"
-              onMouseEnter={() => handleMouseEnter("text")}
-              onMouseLeave={handleMouseLeave}
-              variants={{
-                hidden: { opacity: 0, y: 20 },
-                visible: { opacity: 1, y: 0, transition: { delay: 0.2 } }
-              }}
-            >
-              Immersive Architectural Visualization
-            </motion.h1>
-            <motion.p
-              className="text-xl text-white/80 mb-10 max-w-3xl"
-              onMouseEnter={() => handleMouseEnter("text")}
-              onMouseLeave={handleMouseLeave}
-              variants={{
-                hidden: { opacity: 0, y: 20 },
-                visible: { opacity: 1, y: 0, transition: { delay: 0.3 } }
-              }}
-            >
-              Experience your architectural designs in stunning detail before they&apos;re built. Our cutting-edge 3D visualization brings your vision to life with photorealistic quality.
-            </motion.p>
-
-            <div className="flex flex-wrap gap-4 justify-center">
-              <motion.button
-                className="glass-button px-8 py-4 bg-emerald-500/20 hover:bg-emerald-500/30 text-lg"
-                whileHover={{ scale: 1.05 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 10 }}
-                onClick={() => {
-                  setShowVRModal(true);
-                }}
-                onMouseEnter={() => handleMouseEnter("button")}
-                onMouseLeave={handleMouseLeave}
+          <div className="relative overflow-hidden min-h-[60vh] md:min-h-[70vh] mb-8 md:mb-10 rounded-xl border border-emerald-500/20">
+            {/* Background video */}
+            <div className="absolute inset-0 w-full h-full overflow-hidden z-0">
+              <video
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full h-full object-cover opacity-80"
+                style={{ minHeight: '100%', minWidth: '100%' }}
+              >
+                <source src={images.bgVideo} type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+              <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-emerald-900/20"></div>
+            </div>
+            
+            {/* Content with higher z-index */}
+            <div className="relative z-10 flex flex-col items-center justify-center h-full py-10 md:py-16">
+              <motion.div
+                className="w-full max-w-md mx-auto flex justify-center mb-8 md:mb-12"
                 variants={{
                   hidden: { opacity: 0, y: 20 },
-                  visible: { opacity: 1, y: 0, transition: { delay: 0.4 } }
+                  visible: { opacity: 1, y: 0, transition: { delay: 0.2 } }
                 }}
               >
-                Experience VR Demo
-              </motion.button>
-              <motion.button
-                className="glass-button px-8 py-4 bg-blue-500/20 hover:bg-blue-500/30 text-lg"
-                whileHover={{ scale: 1.05 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 10 }}
-                onClick={() => {
-                  const portfolioSection = document.getElementById('portfolio');
-                  if (portfolioSection) {
-                    portfolioSection.scrollIntoView({ behavior: 'smooth' });
-                  }
-                }}
-                onMouseEnter={() => handleMouseEnter("button")}
-                onMouseLeave={handleMouseLeave}
-                variants={{
-                  hidden: { opacity: 0, y: 20 },
-                  visible: { opacity: 1, y: 0, transition: { delay: 0.5 } }
-                }}
-              >
-                View Projects
-              </motion.button>
+                {/* Logo removed by user */}
+              </motion.div>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-6">
-            <div className="glass-morphism p-6 flex flex-col items-center text-center" onMouseEnter={() => handleMouseEnter("button")} onMouseLeave={handleMouseLeave}>
-              <div className="w-16 h-16 bg-emerald-500/20 p-4 rounded-lg mb-4 flex items-center justify-center">
-                <svg className="w-8 h-8 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-8 mt-4 md:mt-6">
+            <div className="glass-morphism p-4 md:p-6 flex flex-col items-center text-center" onMouseEnter={() => handleMouseEnter("button")} onMouseLeave={handleMouseLeave}>
+              <div className="w-12 md:w-16 h-12 md:h-16 bg-emerald-500/20 p-3 md:p-4 rounded-lg mb-3 md:mb-4 flex items-center justify-center">
+                <svg className="w-6 md:w-8 h-6 md:h-8 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-medium mb-2" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>Real-time Rendering</h3>
-              <p className="text-white/70" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>Interactive walkthroughs with photorealistic quality powered by Unreal Engine 5.</p>
+              <h3 className={`${responsiveText.cardTitle} font-medium mb-2`} onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>Real-time Rendering</h3>
+              <p className={`${responsiveText.cardText} text-white/70`} onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>Interactive walkthroughs with photorealistic quality powered by Unreal Engine 5.</p>
             </div>
 
-            <div className="glass-morphism p-6 flex flex-col items-center text-center" onMouseEnter={() => handleMouseEnter("button")} onMouseLeave={handleMouseLeave}>
-              <div className="w-16 h-16 bg-blue-500/20 p-4 rounded-lg mb-4 flex items-center justify-center">
-                <svg className="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <div className="glass-morphism p-4 md:p-6 flex flex-col items-center text-center" onMouseEnter={() => handleMouseEnter("button")} onMouseLeave={handleMouseLeave}>
+              <div className="w-12 md:w-16 h-12 md:h-16 bg-blue-500/20 p-3 md:p-4 rounded-lg mb-3 md:mb-4 flex items-center justify-center">
+                <svg className="w-6 md:w-8 h-6 md:h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-medium mb-2" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>Global Access</h3>
-              <p className="text-white/70" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>Share your visualizations with clients anywhere in the world.</p>
+              <h3 className={`${responsiveText.cardTitle} font-medium mb-2`} onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>Global Access</h3>
+              <p className={`${responsiveText.cardText} text-white/70`} onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>Share your visualizations with clients anywhere in the world.</p>
             </div>
 
-            <div className="glass-morphism p-6 flex flex-col items-center text-center" onMouseEnter={() => handleMouseEnter("button")} onMouseLeave={handleMouseLeave}>
-              <div className="w-16 h-16 bg-purple-500/20 p-4 rounded-lg mb-4 flex items-center justify-center">
-                <svg className="w-8 h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <div className="glass-morphism p-4 md:p-6 flex flex-col items-center text-center" onMouseEnter={() => handleMouseEnter("button")} onMouseLeave={handleMouseLeave}>
+              <div className="w-12 md:w-16 h-12 md:h-16 bg-purple-500/20 p-3 md:p-4 rounded-lg mb-3 md:mb-4 flex items-center justify-center">
+                <svg className="w-6 md:w-8 h-6 md:h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-medium mb-2" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>Mobile Compatible</h3>
-              <p className="text-white/70" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>Experience immersive visualizations on any device, including mobile phones and tablets.</p>
+              <h3 className={`${responsiveText.cardTitle} font-medium mb-2`} onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>Mobile Compatible</h3>
+              <p className={`${responsiveText.cardText} text-white/70`} onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>Experience immersive visualizations on any device, including mobile phones and tablets.</p>
             </div>
           </div>
 
-          <div className="flex justify-center mt-16 relative">
-            <div className="vr-experience w-full md:w-3/4 lg:w-2/3 h-[300px] md:h-[400px] relative overflow-hidden rounded-xl bg-black/20">
+          <div className="flex justify-center mt-8 md:mt-16 relative">
+            <div className="vr-experience w-full md:w-3/4 lg:w-2/3 h-[250px] md:h-[300px] lg:h-[400px] relative overflow-hidden rounded-xl bg-black/20">
               <Image
                 src={images.realtimeRendering}
                 alt="VR Experience"
@@ -206,16 +185,16 @@ export default function Home() {
                 priority
               />
               <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent flex items-center">
-                <div className="p-8 w-full">
-                  <h3 className="text-2xl md:text-3xl font-medium mb-4" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
+                <div className="p-4 md:p-8 w-full">
+                  <h3 className={`${responsiveText.subheading} font-medium mb-3 md:mb-4`} onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
                     Virtual Reality Experience
                   </h3>
-                  <p className="text-white/70 mb-6 max-w-md" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
+                  <p className={`${responsiveText.cardText} text-white/70 mb-4 md:mb-6 max-w-md`} onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
                     Try our immersive VR demo and explore architectural spaces like never before. Feel the scale, lighting, and atmosphere of your future project.
                   </p>
                   <div className="flex justify-center">
                     <button
-                      className="glass-button px-6 py-3 bg-emerald-500/20 hover:bg-emerald-500/30"
+                      className="glass-button px-4 md:px-6 py-2 md:py-3 bg-emerald-500/20 hover:bg-emerald-500/30"
                       onClick={() => setShowVRModal(true)}
                       onMouseEnter={() => handleMouseEnter("button")}
                       onMouseLeave={handleMouseLeave}
@@ -225,7 +204,7 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-              <div className="absolute bottom-4 right-4 flex gap-2">
+              <div className="absolute bottom-4 right-4 hidden md:flex gap-2">
                 <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
                 <div className="text-xs text-white/70">Experience Available</div>
               </div>
@@ -241,18 +220,18 @@ export default function Home() {
           initial="hidden"
           animate="visible"
           variants={fadeInUp}
-          className="section container-wide"
+          className="section container-wide px-4 md:px-0"
         >
-          <div className="glass-morphism p-8 mb-10">
-            <h2 className="section-title" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
+          <div className="glass-morphism p-4 md:p-8 mb-6 md:mb-10">
+            <h2 className={`${responsiveText.sectionTitle} section-title`} onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
               Featured Projects
             </h2>
-            <p className="section-description" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
+            <p className={`${responsiveText.paragraph} section-description`} onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
               Explore our latest architectural visualizations created with Unreal Engine 5
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 h-auto" style={{ gridAutoRows: "1fr" }}>
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-6 h-auto" style={{ gridAutoRows: "1fr" }}>
             {/* Card 1: 360° Panoramic Views - LARGER card (top-left) */}
             <motion.div
               className="project-card col-span-12 md:col-span-8 h-full"
@@ -270,14 +249,14 @@ export default function Home() {
                   sizes="(max-width: 768px) 100vw, 66vw"
                   priority
                 />
-                <div className="absolute bottom-0 left-0 w-full p-6 bg-gradient-to-t from-black/80 to-transparent">
-                  <h3 className="text-2xl font-medium text-white" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
+                <div className="absolute bottom-0 left-0 w-full p-4 md:p-6 bg-gradient-to-t from-black/80 to-transparent">
+                  <h3 className={`${responsiveText.subheading} font-medium text-white`} onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
                     360° Panoramic Views
                   </h3>
-                  <p className="text-white/70 text-base mt-2" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
+                  <p className={`${responsiveText.cardText} text-white/70 mt-1 md:mt-2`} onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
                     Fully interactive experiences for immersive client engagement. Explore spaces as if you were there.
                   </p>
-                  <div className="flex items-center gap-2 mt-4">
+                  <div className="flex items-center gap-2 mt-2 md:mt-4">
                     <span className="text-xs bg-emerald-900/30 text-emerald-200 py-1 px-2 rounded" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
                       VR Ready
                     </span>
@@ -302,14 +281,14 @@ export default function Home() {
                   fill
                   sizes="(max-width: 768px) 100vw, 33vw"
                 />
-                <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black/80 to-transparent">
-                  <h3 className="text-xl font-medium text-white" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
+                <div className="absolute bottom-0 left-0 w-full p-3 md:p-4 bg-gradient-to-t from-black/80 to-transparent">
+                  <h3 className={`${responsiveText.cardTitle} font-medium text-white`} onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
                     Surrounding Information
                   </h3>
-                  <p className="text-white/70 text-sm mt-2" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
+                  <p className={`${responsiveText.cardText} text-white/70 mt-1 md:mt-2`} onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
                     Detailed surrounding area information with interactive maps.
                   </p>
-                  <div className="flex items-center gap-2 mt-3">
+                  <div className="flex items-center gap-2 mt-2 md:mt-3">
                     <span className="text-xs bg-blue-900/30 text-blue-200 py-1 px-2 rounded" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
                       Interactive Map
                     </span>
@@ -334,14 +313,14 @@ export default function Home() {
                   fill
                   sizes="(max-width: 768px) 100vw, 33vw"
                 />
-                <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black/80 to-transparent">
-                  <h3 className="text-xl font-medium text-white" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
+                <div className="absolute bottom-0 left-0 w-full p-3 md:p-4 bg-gradient-to-t from-black/80 to-transparent">
+                  <h3 className={`${responsiveText.cardTitle} font-medium text-white`} onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
                     Archviz Application
                   </h3>
-                  <p className="text-white/70 text-sm mt-2" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
+                  <p className={`${responsiveText.cardText} text-white/70 mt-1 md:mt-2`} onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
                     Cinematic video tours showcasing projects dynamically.
                   </p>
-                  <div className="flex items-center gap-2 mt-3">
+                  <div className="flex items-center gap-2 mt-2 md:mt-3">
                     <span className="text-xs bg-emerald-900/30 text-emerald-200 py-1 px-2 rounded" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
                       Unreal Engine 5
                     </span>
@@ -366,14 +345,14 @@ export default function Home() {
                   fill
                   sizes="(max-width: 768px) 100vw, 66vw"
                 />
-                <div className="absolute bottom-0 left-0 w-full p-6 bg-gradient-to-t from-black/80 to-transparent">
-                  <h3 className="text-2xl font-medium text-white" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
+                <div className="absolute bottom-0 left-0 w-full p-4 md:p-6 bg-gradient-to-t from-black/80 to-transparent">
+                  <h3 className={`${responsiveText.subheading} font-medium text-white`} onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
                     Real-Time Rendering
                   </h3>
-                  <p className="text-white/70 text-base mt-2" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
+                  <p className={`${responsiveText.cardText} text-white/70 mt-1 md:mt-2`} onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
                     High-quality static images for marketing, real estate, and presentations with photorealistic details.
                   </p>
-                  <div className="flex items-center gap-2 mt-4">
+                  <div className="flex items-center gap-2 mt-2 md:mt-4">
                     <span className="text-xs bg-purple-900/30 text-purple-200 py-1 px-2 rounded" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
                       Photorealistic
                     </span>
@@ -392,21 +371,21 @@ export default function Home() {
           initial="hidden"
           animate="visible"
           variants={fadeInUp}
-          className="section container-wide"
+          className="section container-wide px-4 md:px-0"
         >
-          <div className="glass-morphism p-8 mb-10">
-            <h2 className="section-title" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
+          <div className="glass-morphism p-4 md:p-8 mb-6 md:mb-10">
+            <h2 className={`${responsiveText.sectionTitle} section-title`} onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
               Services
             </h2>
-            <p className="section-description" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
+            <p className={`${responsiveText.paragraph} section-description`} onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
               At Flik, we specialize in high-end architectural visualization, delivering stunning, immersive, and interactive experiences. Our services are designed to bring your vision to life with precision and realism.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
             {/* Service 1: Photorealistic Rendering */}
             <div className="about-card h-full" onMouseEnter={() => handleMouseEnter("button")} onMouseLeave={handleMouseLeave}>
-              <div className="mb-4 aspect-[4/3] overflow-hidden rounded-lg relative">
+              <div className="mb-3 md:mb-4 aspect-[4/3] overflow-hidden rounded-lg relative">
                 <Image
                   src={images.photorealisticRendering}
                   alt="Photorealistic Rendering"
@@ -415,17 +394,17 @@ export default function Home() {
                   sizes="(max-width: 768px) 100vw, 25vw"
                 />
               </div>
-              <h3 className="text-xl font-medium mb-2" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
+              <h3 className={`${responsiveText.cardTitle} font-medium mb-1 md:mb-2`} onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
                 Photorealistic Rendering
               </h3>
-              <p className="text-white/70" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
+              <p className={`${responsiveText.cardText} text-white/70`} onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
                 High-quality static images for marketing, real estate, and presentations.
               </p>
             </div>
 
             {/* Service 2: 3D Walkthrough & Animation */}
             <div className="about-card h-full" onMouseEnter={() => handleMouseEnter("button")} onMouseLeave={handleMouseLeave}>
-              <div className="mb-4 aspect-[4/3] overflow-hidden rounded-lg relative">
+              <div className="mb-3 md:mb-4 aspect-[4/3] overflow-hidden rounded-lg relative">
                 <Image
                   src={images.walkthrough3d}
                   alt="3D Walkthrough & Animation"
@@ -434,17 +413,17 @@ export default function Home() {
                   sizes="(max-width: 768px) 100vw, 25vw"
                 />
               </div>
-              <h3 className="text-xl font-medium mb-2" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
+              <h3 className={`${responsiveText.cardTitle} font-medium mb-1 md:mb-2`} onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
                 3D Walkthrough & Animation
               </h3>
-              <p className="text-white/70" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
+              <p className={`${responsiveText.cardText} text-white/70`} onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
                 Cinematic video tours showcasing the project dynamically.
               </p>
             </div>
 
             {/* Service 3: 360° Virtual Tours & VR */}
             <div className="about-card h-full" onMouseEnter={() => handleMouseEnter("button")} onMouseLeave={handleMouseLeave}>
-              <div className="mb-4 aspect-[4/3] overflow-hidden rounded-lg relative">
+              <div className="mb-3 md:mb-4 aspect-[4/3] overflow-hidden rounded-lg relative">
                 <Image
                   src={images.virtualTours}
                   alt="360° Virtual Tours & VR"
@@ -453,17 +432,17 @@ export default function Home() {
                   sizes="(max-width: 768px) 100vw, 25vw"
                 />
               </div>
-              <h3 className="text-xl font-medium mb-2" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
+              <h3 className={`${responsiveText.cardTitle} font-medium mb-1 md:mb-2`} onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
                 360° Virtual Tours & VR
               </h3>
-              <p className="text-white/70" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
+              <p className={`${responsiveText.cardText} text-white/70`} onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
                 Fully interactive experiences for immersive client engagement.
               </p>
             </div>
 
             {/* Service 4: Real-time Interactive Experiences */}
             <div className="about-card h-full" onMouseEnter={() => handleMouseEnter("button")} onMouseLeave={handleMouseLeave}>
-              <div className="mb-4 aspect-[4/3] overflow-hidden rounded-lg relative">
+              <div className="mb-3 md:mb-4 aspect-[4/3] overflow-hidden rounded-lg relative">
                 <Image
                   src={images.interactiveExperiences}
                   alt="Real-time Interactive Experiences"
@@ -472,59 +451,59 @@ export default function Home() {
                   sizes="(max-width: 768px) 100vw, 25vw"
                 />
               </div>
-              <h3 className="text-xl font-medium mb-2" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
+              <h3 className={`${responsiveText.cardTitle} font-medium mb-1 md:mb-2`} onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
                 Real-time Interactive Experiences
               </h3>
-              <p className="text-white/70" onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
+              <p className={`${responsiveText.cardText} text-white/70`} onMouseEnter={() => handleMouseEnter("text")} onMouseLeave={handleMouseLeave}>
                 Unreal Engine or Unity-based interactive models where clients can explore spaces freely.
               </p>
             </div>
           </div>
 
-          <div className="mt-16 glass-morphism p-8">
+          <div className="mt-8 md:mt-16 glass-morphism p-4 md:p-8">
             <div className="flex flex-col items-center text-center">
-              <h3 className="text-2xl font-medium mb-6" onMouseEnter={() => handleMouseEnter("")} onMouseLeave={handleMouseLeave}>
+              <h3 className={`${responsiveText.subheading} font-medium mb-4 md:mb-6`} onMouseEnter={() => handleMouseEnter("")} onMouseLeave={handleMouseLeave}>
                 Our Technology Solutions
               </h3>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mb-6 md:mb-8">
                 <div className="flex flex-col items-center"
                   onMouseEnter={() => handleMouseEnter("button")}
                   onMouseLeave={handleMouseLeave}
                 >
-                  <div className="w-16 h-16 bg-emerald-900/30 rounded-lg flex items-center justify-center mb-4">
-                    <svg className="w-8 h-8 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <div className="w-12 md:w-16 h-12 md:h-16 bg-emerald-900/30 rounded-lg flex items-center justify-center mb-3 md:mb-4">
+                    <svg className="w-6 md:w-8 h-6 md:h-8 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
                     </svg>
                   </div>
-                  <h4 className="text-xl mb-2">AI-Powered Optimization</h4>
-                  <p className="text-white/70 text-sm">Enhance performance with real-time AI-driven adjustments.</p>
+                  <h4 className={`${responsiveText.cardTitle} mb-1 md:mb-2`}>AI-Powered Optimization</h4>
+                  <p className={`${responsiveText.cardText} text-white/70`}>Enhance performance with real-time AI-driven adjustments.</p>
                 </div>
 
                 <div className="flex flex-col items-center"
                   onMouseEnter={() => handleMouseEnter("button")}
                   onMouseLeave={handleMouseLeave}
                 >
-                  <div className="w-16 h-16 bg-blue-900/30 rounded-lg flex items-center justify-center mb-4">
-                    <svg className="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <div className="w-12 md:w-16 h-12 md:h-16 bg-blue-900/30 rounded-lg flex items-center justify-center mb-3 md:mb-4">
+                    <svg className="w-6 md:w-8 h-6 md:h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
                     </svg>
                   </div>
-                  <h4 className="text-xl mb-2">Ultra-Responsive Design</h4>
-                  <p className="text-white/70 text-sm">Experience seamless interactions across all devices.</p>
+                  <h4 className={`${responsiveText.cardTitle} mb-1 md:mb-2`}>Ultra-Responsive Design</h4>
+                  <p className={`${responsiveText.cardText} text-white/70`}>Experience seamless interactions across all devices.</p>
                 </div>
 
                 <div className="flex flex-col items-center"
                   onMouseEnter={() => handleMouseEnter("button")}
                   onMouseLeave={handleMouseLeave}
                 >
-                  <div className="w-16 h-16 bg-purple-900/30 rounded-lg flex items-center justify-center mb-4">
-                    <svg className="w-8 h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <div className="w-12 md:w-16 h-12 md:h-16 bg-purple-900/30 rounded-lg flex items-center justify-center mb-3 md:mb-4">
+                    <svg className="w-6 md:w-8 h-6 md:h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                     </svg>
                   </div>
-                  <h4 className="text-xl mb-2">Secure & Scalable</h4>
-                  <p className="text-white/70 text-sm">Built with enterprise-level security and infinite scalability.</p>
+                  <h4 className={`${responsiveText.cardTitle} mb-1 md:mb-2`}>Secure & Scalable</h4>
+                  <p className={`${responsiveText.cardText} text-white/70`}>Built with enterprise-level security and infinite scalability.</p>
                 </div>
               </div>
 
@@ -578,13 +557,13 @@ export default function Home() {
               <div className="grid grid-cols-2 gap-4 mt-6">
                 <div onMouseEnter={() => handleMouseEnter("button")} onMouseLeave={handleMouseLeave}>
                   <div className="stats bg-black/40 p-4 rounded-lg border border-gray-700/50">
-                    <h4 className="text-4xl font-bold text-emerald-400" onMouseEnter={() => handleMouseEnter("")} onMouseLeave={handleMouseLeave}>250+</h4>
+                    <h4 className="text-4xl font-bold text-emerald-400" onMouseEnter={() => handleMouseEnter("")} onMouseLeave={handleMouseLeave}>5+</h4>
                     <p className="text-sm text-white/70">Completed Projects</p>
                   </div>
                 </div>
                 <div onMouseEnter={() => handleMouseEnter("button")} onMouseLeave={handleMouseLeave}>
                   <div className="stats bg-black/40 p-4 rounded-lg border border-gray-700/50">
-                    <h4 className="text-4xl font-bold text-blue-400" onMouseEnter={() => handleMouseEnter("")} onMouseLeave={handleMouseLeave}>5+</h4>
+                    <h4 className="text-4xl font-bold text-blue-400" onMouseEnter={() => handleMouseEnter("")} onMouseLeave={handleMouseLeave}>2+</h4>
                     <p className="text-sm text-white/70">Years Experience</p>
                   </div>
                 </div>
@@ -596,7 +575,7 @@ export default function Home() {
                 </div>
                 <div onMouseEnter={() => handleMouseEnter("button")} onMouseLeave={handleMouseLeave}>
                   <div className="stats bg-black/40 p-4 rounded-lg border border-gray-700/50">
-                    <h4 className="text-4xl font-bold text-pink-400" onMouseEnter={() => handleMouseEnter("")} onMouseLeave={handleMouseLeave}>50+</h4>
+                    <h4 className="text-4xl font-bold text-pink-400" onMouseEnter={() => handleMouseEnter("")} onMouseLeave={handleMouseLeave}>4+</h4>
                     <p className="text-sm text-white/70">Global Clients</p>
                   </div>
                 </div>
@@ -1318,8 +1297,8 @@ export default function Home() {
                   onMouseLeave={() => handleIconHover(null)}
                   onClick={() => handleIconClick(index)}
                 >
-                  <FontAwesomeIcon icon={item.icon} className="text-lg" />
-                  <span className="nav-button-label">
+                  <FontAwesomeIcon icon={item.icon} className="text-base md:text-lg" />
+                  <span className="nav-button-label text-xs md:text-sm">
                     {item.label}
                   </span>
                 </button>

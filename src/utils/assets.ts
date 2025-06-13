@@ -21,4 +21,7 @@ export const images = {
   
   // Logo
   flikLogo: '/assets/flik-logo.png',
+  
+  // Videos
+  bgVideo: '/assets/bg-video.mp4',
 }; 
